@@ -24,6 +24,19 @@ public class EthernetII extends ProtocolSpec {
         this.pduTailLength = pduTailLength;
     }
 
+    public static boolean isConform (DataFrame frame, int offset) {
+        // TODO: how to check confomity?
+    }
+
+    public static int headerLength (DataFrame frame, int offset) {
+        return 14;
+    }
+
+    public static int footerLength (DataFrame frame, int offset) {
+        return 4; // TODO: padding?
+    }
+
+
     public String dstMAC() {
         return BinaryUtils.extractMACAddress(frame, pduOrigin, 6);
     }

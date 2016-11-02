@@ -13,6 +13,8 @@ public class PcapParser {
     private static final int globalHeaderLength = 24; // bytes
     private static final int recordHeaderLength = 16; // bytes
 
+    private int dataLinkType;
+
     public PcapParser (byte[] bytes) {
         this.bytes = bytes;
     }
@@ -56,28 +58,40 @@ public class PcapParser {
         return this.toHexString(true);
     }
     
-    public boolean isPcap() {
-        int magicNumber = BinaryUtils.extractInt(bytes, 0, 4);
+    public boolean isPcap () {
+        int magicNumber = BinaryUtils.extractIntByte(bytes, 0, 4);
         return magicNumber == 0xa1b2c3d4 || magicNumber == 0xd4c3b2a1;
     }
 
-    public int inclLen () {
-        
-
+    public int dataLinkType () {
+        return dataLinkType;
     }
 
+    public int inclLen (int recordOffset) {
+        return BinaryUtils.extractIntByte(bytes, recordOffset + 8, 4);
+    }
+
+    public int origLen (int recordOffset) {
+        return BinaryUtils.extractIntByte(bytes, recordOffset + 12, 4);
+    }
+
+    /* Parses the beginning of the file and returns whether this file is parsable by this parser */
+    public boolean parseGlobalHeader () {
+        this.dataLinkType = BinaryUtils.extractIntByte(bytes, 20, 4);
+        return this.bytes.length > 40 && this.isPcap() && this.dataLinkType == 0;
+    }
+
+    /* Divide data in data frames and returns a list of them */
     public List<DataFrame> extractFrames () {
         // global header: 24 bytes
         // packet header: 16 bytes
         List<DataFrame> frames = new ArrayList<DataFrame>();
-        int pcapDataOffset = globalHeaderLength, currentFrameLen = 0, inclLen, origLen;
+        int recordOffset = globalHeaderLength, currentFrameLen = 0, inclLen, origLen;
         ByteBuffer frameBytes;
         do {
             /* Parse records header */
-            
-            inclLen = BinaryUtils.extractIntByte(frame, pcapDataOffset + 8, 4);
-            origLen = BinaryUtils.extractIntByte(frame, pcapDataOffset + 12, 4);
-            pcapDataOffset += recordHeaderLength;
+            inclLen = inclLen(recordOffset);
+            origLen = origLen(recordOffset);
 
             /* Parse record data (splitted frames) */
             // New frame
@@ -86,7 +100,7 @@ public class PcapParser {
             }
 
             // Extract record to frame
-            frameBytes.put(bytes, pcapDataOffset, inclLen);
+            frameBytes.put(bytes, recordOffset + recordHeaderLength, inclLen);
             currentFrameLen += inclLen;
 
             // End frame
@@ -95,20 +109,23 @@ public class PcapParser {
                 frames.add(frameBytes);
             } else if (currentFrameLen > origLen) throw new PcapParserException();
 
-            pcapDataOffset += inclLen;
+            recordOffset += inclLen;
             
         } while (true); // TODO: break somewhere!
 
         return frames;
     }
-    
+   
+    /* Divide frames in protocol data units and return a list of them */ 
     public List<ProtocolSpec> extractLayers (DataFrame frame) {
         List<ProtocolSpec> layers = new ArrayList<ProtocolSpec>();
         int frameOffset = 0, currentLayerLen = 0;
 
-        do {
-            
-        } while (true); // TODO: break somewhere!
+        if (this.dataLinkType != 0) {
+            layers.add(new UnknownProtocol());
+            return layers;
+        }
+    
 
         return layers;
     }
