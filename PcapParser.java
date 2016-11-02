@@ -5,7 +5,10 @@ import java.nio.file.Paths;
 
 public class PcapParser {
 
-    private byte[] bytes;
+    private byte[] bytes; // TODO: make a ByteBuffer
+
+    private static final int globalHeaderLength = 24; // bytes
+    private static final int packetHeaderLength = 16; // bytes
 
     public PcapParser (byte[] bytes) {
         this.bytes = bytes;
@@ -14,12 +17,6 @@ public class PcapParser {
     public String toHexString (boolean withAscii) {
         return toHexString(withAscii, 0, this.bytes.length);
     }
-
-    public boolean isPcap() {
-        int magicNumber = BinaryUtils.extractInt(bytes, 0, 4);
-        return magicNumber == 0xa1b2c3d4 || magicNumber == 0xd4c3b2a1;
-    }
-
 
     public String toHexString (boolean withAscii, int offsetMin, int offsetMax) {
         StringBuilder hexStr = new StringBuilder();
@@ -54,6 +51,40 @@ public class PcapParser {
 
     public String toString () {
         return this.toHexString(true);
+    }
+    
+    public boolean isPcap() {
+        int magicNumber = BinaryUtils.extractInt(bytes, 0, 4);
+        return magicNumber == 0xa1b2c3d4 || magicNumber == 0xd4c3b2a1;
+    }
+
+    public List<DataFrame> extractFrames () {
+        // global header: 24 bytes
+        // packet header: 16 bytes
+        List<DataFrame> frames = new ArrayList<DataFrame>();
+        int dataBlockOffset = globalHeaderLength, currentFrameLen = 0, inclLen, origLen;
+        ByteBuffer frameBytes;
+        do {
+            inclLen = BinaryUtils.extractIntByte(frame, dataBlockOffset + 8, 4);
+            origLen = BinaryUtils.extractIntByte(frame, dataBlockOffset + 12, 4);
+            dataBlockOffset += packetHeaderLength;
+
+            if (currentFrameLen == 0) {
+                frameBytes = new ByteBuffer(origLen);
+            }
+
+            frameBytes.put(bytes, dataBlockOffset, inclLen);
+            currentFrameLen += inclLen;
+
+            if (currentFrameLen == origLen) {
+                currentFrameLen = 0; 
+            }
+
+            dataBlockOffset += inclLen;
+            
+        } while ();
+
+        return frames;
     }
 
     public static void main (String[] args) {
