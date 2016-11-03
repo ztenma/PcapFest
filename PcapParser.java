@@ -166,8 +166,11 @@ public class PcapParser {
             
         }
 
-
         return layers;
+    }
+
+    public String detectLayer (DataFrame frame, int offset, ProtocolSpec layers) {
+        
     }
 
     public static void main (String[] args) {
