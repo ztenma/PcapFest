@@ -19,7 +19,7 @@ public class IPv4 extends ProtocolSpec {
     public int version () {
         return BinaryUtils.extractInt(frame, pduOrigin, 0, 4);
     }
-    
+
     public String ihl () {
         return BinaryUtils.extractInt(frame, pduOrigin, 4, 4);
     }
@@ -44,31 +44,30 @@ public class IPv4 extends ProtocolSpec {
         return BinaryUtils.extractInt(frame, pduOrigin+6, 3, 13);
     }
 
-	
-	// 8 bits
+    // 8 bits
     public int ttl () {
         return BinaryUtils.extractInt(frame, pduOrigin+8, 0, 8);
     }
-	
-	// 8 bits
-	public int proto () {
-		return BinaryUtils.extractInt(frame, pduOrigin+9, 0, 8);
-	}
-	
-	// 16 bits
-	public int checksum () {
-		return BinaryUtils.extractInt(frame, pduOrigin+10, 0, 16);
-	}
-	
-	// TODO : convertir IP en notation pointée
-	// 32 bits
-	public int srcIP () {
-		return BinaryUtils.extractInt(frame, pduOrigin+12, 0, 32);
-	}
-	
-	// 32 bits
-	public int dstIP () {
-		return BinaryUtils.extractInt(frame, pduOrigin+16, 0, 32);
-	}
+
+    // 8 bits
+    public int proto () {
+        return BinaryUtils.extractInt(frame, pduOrigin+9, 0, 8);
+    }
+
+    // 16 bits
+    public int checksum () {
+        return BinaryUtils.extractInt(frame, pduOrigin+10, 0, 16);
+    }
+
+    // TODO : convertir IP en notation pointée
+    // 32 bits
+    public int srcIP () {
+        return BinaryUtils.extractInt(frame, pduOrigin+12, 0, 32);
+    }
+
+    // 32 bits
+    public int dstIP () {
+        return BinaryUtils.extractInt(frame, pduOrigin+16, 0, 32);
+    }
 }
 
