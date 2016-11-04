@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 
 public class PcapParser {
 
-    private byte[] bytes; // TODO: make a ByteBuffer
+    private ByteBuffer bytes;
 
     private static final int globalHeaderLength = 24; // bytes
     private static final int recordHeaderLength = 16; // bytes
@@ -16,46 +16,11 @@ public class PcapParser {
     private int dataLinkType;
 
     public PcapParser (byte[] bytes) {
-        this.bytes = bytes;
+        this.bytes = ByteBuffer.wrap(bytes).asReadOnlyBuffer();
     }
     
-    public String toHexString (boolean withAscii) {
-        return toHexString(withAscii, 0, this.bytes.length);
-    }
-
-    public String toHexString (boolean withAscii, int offsetMin, int offsetMax) {
-        StringBuilder hexStr = new StringBuilder();
-        StringBuilder asciiStr = new StringBuilder();
-        
-        int i, bytesCount = offsetMax - offsetMin, rowWidth = 16;
-        for (i = 0; i < bytesCount; i++) {
-            
-            hexStr.append(String.format("%02x ", bytes[offsetMin + i]));
-            if (withAscii)
-                asciiStr.append(String.format("%c", this.toPrintable(bytes[offsetMin + i])));
-            
-            if (i % rowWidth == rowWidth/2-1) hexStr.append(' ');
-            if (i % rowWidth == rowWidth-1) 
-                if (!withAscii) hexStr.append('\n');
-                else {
-                    hexStr.append('|').append(asciiStr).append("|\n");
-                    asciiStr.delete(0, asciiStr.length());
-                }
-        }
-        hexStr.append(String.format("%" + ((rowWidth - i % rowWidth) * 3 + (i % rowWidth <= rowWidth/2 ? 1 : 0)) + "s", " "));
-        if (withAscii) hexStr.append('|').append(asciiStr).append("|\n");
-
-        return hexStr.toString();
-    }
-
-    private byte toPrintable(byte b) {
-        if      (b < 0x20) return (byte)0x2E;
-        else if (b > 0x7E) return (byte)0x2E;
-        return b;
-    }
-
     public String toString () {
-        return this.toHexString(true);
+        return BinaryUtils.toHexString(bytes.array(), true);
     }
     
     public boolean isPcap () {
@@ -78,7 +43,7 @@ public class PcapParser {
     /* Parses the beginning of the file and returns whether this file is parsable by this parser */
     public boolean parseGlobalHeader () {
         this.dataLinkType = BinaryUtils.extractIntByte(bytes, 20, 4);
-        return this.bytes.length > 40 && this.isPcap() && this.dataLinkType == 0;
+        return this.bytes.limit() > 40 && this.isPcap() && this.dataLinkType == 0;
     }
 
     /* Divide data in data frames and returns a list of them */
@@ -96,17 +61,17 @@ public class PcapParser {
             /* Parse record data (splitted frames) */
             // New frame
             if (currentFrameLen == 0) {
-                frameBytes = new ByteBuffer(origLen);
+                frameBytes = ByteBuffer.allocateDirect(origLen);
             }
 
             // Extract record to frame
-            frameBytes.put(bytes, recordOffset + recordHeaderLength, inclLen);
+            frameBytes.put(bytes.array(), recordOffset + recordHeaderLength, inclLen);
             currentFrameLen += inclLen;
 
             // End frame
             if (currentFrameLen == origLen) {
                 currentFrameLen = 0; 
-                frames.add(frameBytes);
+                frames.add(new DataFrame(frameBytes));
             } else if (currentFrameLen > origLen) throw new PcapParserException();
 
             recordOffset += inclLen;
@@ -137,14 +102,19 @@ public class PcapParser {
                 case "HTTP": lastLayer = new HTTP(frame, frameOffset); break;
                 case "DNS": lastLayer = new DNS(frame, frameOffset); break;
                 case "DHCP": lastLayer = new DHCP(frame, frameOffset); break;
-                default: "UnknownProtocol": lastLayer = new UnknownProtocol(frame, frameOffset);
+                default: lastLayer = new UnknownProtocol(frame, frameOffset);
             }
 
-            layers.add(ethernet);
-            frameOffset += layers.get(i).headerLength();
+            layers.add(lastLayer);
+            frameOffset += layers.get(i).headerSize(frame, frameOffset);
             i++;
 
         } while (frameOffset < frame.length() && lastLayer.name != "UnknownProtocol" && layerLayer.OSILayer != 7);
+
+        for (ProtocolSpec proto : layers)
+            if (proto.name.equals("EthernetII"))
+                ((EthernetII)proto).setFooterOrigin(frameOffset);
+                break;
 
         return layers;
     }
@@ -153,8 +123,8 @@ public class PcapParser {
         // TODO
         if (lastLayer == null) {
             if (this.dataLinkType == 0) 
-                return "EthernetII"
-            else return "UnknownProtocol"
+                return "EthernetII";
+            else return "UnknownProtocol";
         }
         switch (lastLayer.name) {
             case "EthernetII":
@@ -177,7 +147,7 @@ public class PcapParser {
             break;
             case "TCP":
                 lastLayer = (TCP) lastLayer;
-                int layerOffset = offset + lastLayer.headerLength();
+                int layerOffset = offset + lastLayer.headerSize();
                 if (HTTP.test(frame, layerOffset))
                     return "HTTP";
                 if (DNS.test(frame, layerOffset))
@@ -186,7 +156,7 @@ public class PcapParser {
             break;
             case "UDP":
                 lastLayer = (UDP) lastLayer;
-                int layerOffset = offset + lastLayer.headerLength();
+                int layerOffset = offset + lastLayer.headerSize();
                 if (DHCP.test(frame, layerOffset))
                     return "DHCP";
                 if (DNS.test(frame, layerOffset))

@@ -1,5 +1,6 @@
+import java.nio.ByteBuffer;
 
-public class UDP extends ProtocolSpec {
+public class UDP implements ProtocolSpec {
 
     public static final String name = "UDP";
     public static final byte OSILayer = 4;
@@ -17,22 +18,22 @@ public class UDP extends ProtocolSpec {
 
     // 16 bits
     public int srcPort () {
-        return BinaryUtils.extractInt(frame, headerOrigin, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin, 0, 16);
     }
 
     // 16 bits
     public int dstPort () {
-        return BinaryUtils.extractInt(frame, headerOrigin+2, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+2, 0, 16);
     }
 
     // 16 bits
     public int length () {
-        return BinaryUtils.extractInt(frame, headerOrigin+4, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+4, 0, 16);
     }
 
     // 16 bits
     public int checksum () {
-        return BinaryUtils.extractInt(frame, headerOrigin+6, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+6, 0, 16);
     }
 
 }

@@ -1,10 +1,10 @@
+import java.nio.ByteBuffer;
 
-public class EthernetII extends ProtocolSpec {
+public class EthernetII implements ProtocolSpec {
 
     public static final String name = "EthernetII";
     public static final byte OSILayer = 2;
 
-    private DataFrame frame;
     private ByteBuffer frameBytes;
 
     // For MAC Header
@@ -13,6 +13,12 @@ public class EthernetII extends ProtocolSpec {
     // For Checksum
     private int footerOrigin;
 
+    public EthernetII (DataFrame frame, int headerOrigin) {
+        this.frameBytes = frame.bytes();
+        this.headerOrigin = headerOrigin;
+        this.footerOrigin = -1;
+    }
+    
     public static int headerSize (DataFrame frame, int offset) {
         return 14;
     }
@@ -21,30 +27,23 @@ public class EthernetII extends ProtocolSpec {
         return 4; // TODO: padding?
     }
 
-    public EthernetII (DataFrame frame, int headerOrigin, int footerOrigin) {
-        this.frame = frame;
-        this.frameBytes = frame.getBytes();
-        this.headerOrigin = headerOrigin;
-        this.footerOrigin = footerOrigin;
-    }
-    
     public void setFooterOrigin (int offset) {
         this.footerOrigin = offset;
     }
 
     public String dstMAC () {
-        return BinaryUtils.extractMACAddress(frame, headerOrigin, 6);
+        return BinaryUtils.extractMACAddress(frameBytes, headerOrigin, 6);
     }
     
     public String srcMAC () {
-        return BinaryUtils.extractMACAddress(frame, headerOrigin + 6, 6);
+        return BinaryUtils.extractMACAddress(frameBytes, headerOrigin + 6, 6);
     }
 
     public int etherType () {
-        return BinaryUtils.extractIntByte(frame, headerOrigin + 12, 2);
+        return BinaryUtils.extractIntByte(frameBytes, headerOrigin + 12, 2);
     }
 
     public int checksum () {
-        return BinaryUtils.extractIntByte(frame, footerOrigin, 4);
+        return BinaryUtils.extractIntByte(frameBytes, footerOrigin, 4);
     }
 }

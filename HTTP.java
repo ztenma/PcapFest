@@ -1,4 +1,8 @@
-public class HTTP extends ProtocolSpec {
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.ArrayList;
+
+public class HTTP implements ProtocolSpec {
 
     public static final String name = "HTTP";
     public static final byte OSILayer = 7;
@@ -14,7 +18,7 @@ public class HTTP extends ProtocolSpec {
         this.headerOrigin = headerOrigin;
     }
 
-    public static int headerLength () {
+    public static int headerSize () {
         return this.bytes.limit() - this.headerOffset;
     }
 
@@ -25,7 +29,7 @@ public class HTTP extends ProtocolSpec {
     // 16 bits
     public String initialLine () {
         int i;
-        for (i = 0; i < this.headerLength() && bytes.get(i) != '\r'; i++);
+        for (i = 0; i < this.headerSize() && bytes.get(i) != '\r'; i++);
         return bytes.subSequence(0, i).toString();
     }
 

@@ -1,20 +1,22 @@
 import java.nio.ByteBuffer;
 
-public class UnknownProtocol extends ProtocolSpec {
+public class UnknownProtocol implements ProtocolSpec {
 
     public static final String name = "Unknown protocol";
     public static final int OSILayer = 0;
 
+    public UnknownProtocol (DataFrame frame, int headerOffset) {
+    }
 
-    public boolean test (ByteBuffer bytes, int offset) {
+    public static boolean test (ByteBuffer bytes, int offset) {
         return true;
     }
 
-    public int headerSize (ByteBuffer bytes, int offset) {
+    public static int headerSize (ByteBuffer bytes, int offset) {
         return -1; 
     }
 
-    public int footerSize (ByteBuffer bytes, int offset) {
-        return -1; 
+    public static int footerSize (ByteBuffer bytes, int offset) {
+        return -1;
     }
 }

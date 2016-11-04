@@ -3,21 +3,21 @@ import java.util.ArrayList;
 
 public class DataFrame {
     
-    private static currentId = 0;
+    private static int currentId = 0;
     
     private int id;
     private int length;
-    private String timestamp;
+    private int timestamp;
 
     private ByteBuffer bytes;
 
     private ArrayList<ProtocolSpec> layers;
 
-    public DataFrame (ByteBuffer frameBytes, int id, int timestamp) {
+    public DataFrame (ByteBuffer frameBytes) {
         this.id = currentId++;
         this.length = frameBytes.limit();
-        this.timestamp = timestamp;
-        this.bytes = frameBytes;//ByteBuffer.wrap(frameBytes).asReadOnlyBuffer();
+        this.timestamp = 0;
+        this.bytes = frameBytes;//ByteBuffer.wrap(frameBytesBytes).asReadOnlyBuffer();
         this.layers = new ArrayList<ProtocolSpec>();
     }
 

@@ -1,11 +1,11 @@
+import java.nio.ByteBuffer;
 
-public abstract class ProtocolSpec {
+public interface ProtocolSpec {
    
-    public abstract static String name;
-    public abstract static int OSILayer;
+    public String name = "UnknownProtocol";
+    public int OSILayer = 0;
 
-    public abstract static boolean test (ByteBuffer bytes, int offset);
-    public abstract static int headerSize (ByteBuffer bytes, int offset);
-    public abstract static int footerSize (ByteBuffer bytes, int offset);
-    //public abstract ProtocolSpec extract (byte[] bytes);
+    public abstract boolean test (ByteBuffer bytes, int offset);
+    public abstract int headerSize (ByteBuffer bytes, int offset);
+    //public abstract int footerSize (ByteBuffer bytes, int offset);
 }

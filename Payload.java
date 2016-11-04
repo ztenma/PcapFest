@@ -1,5 +1,5 @@
 
-public class Payload extends ProtocolSpec {
+public class Payload implements ProtocolSpec {
 
     private byte[] data;
 

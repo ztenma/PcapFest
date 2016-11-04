@@ -1,5 +1,6 @@
+import java.nio.ByteBuffer;
 
-public class DNS extends ProtocolSpec {
+public class DNS implements ProtocolSpec {
 
     public static final String name = "DNS";
     public static final byte OSILayer = 7;
@@ -8,17 +9,15 @@ public class DNS extends ProtocolSpec {
     private ByteBuffer frameBytes;
 
     private int pduOrigin;
-    private int pduLength;
 
-    public DNS (DataFrame frame, int pduOrigin, int pduLength) {
+    public DNS (DataFrame frame, int pduOrigin) {
         this.frame = frame;
         this.frameBytes = frame.getBytes();
         this.pduOrigin = pduOrigin;
-        this.pduLength = pduLength;
     }
 
 
-    public static test (ByteBuffer bytes, int offset) {
+    public static boolean test (DataFrame frame, int offset) {
         //http://stackoverflow.com/questions/7565300/identifying-dns-packets
         DNS dns = new DNS(bytes, offset);
         int flags = dns.flags();
@@ -36,37 +35,37 @@ public class DNS extends ProtocolSpec {
     }
     // http://repository.root-me.org/R%C3%A9seau/FR%20-%20Les%20r%C3%A9seaux%20Ethernet%20-%20le%20format%20des%20trames.pdf
 
-    public static footerLength () {
+    public static int headerSize (DataFrame frame, int offset) {
         return 0; //TODO
     }
 
     // 16 bits
     public int transactionID () {
-        return BinaryUtils.extractInt(frame, pduOrigin, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, pduOrigin, 0, 16);
     }
     
     // 16 bits
     public int flags () {
-        return BinaryUtils.extractInt(frame, pduOrigin+2, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, pduOrigin+2, 0, 16);
     }
     
     // 16 bits
     public int questionsNumber () {
-        return BinaryUtils.extractInt(frame, pduOrigin+4, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, pduOrigin+4, 0, 16);
     }
     
     // 16 bits
     public int answersRRNumber () {
-        return BinaryUtils.extractInt(frame, pduOrigin+6, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, pduOrigin+6, 0, 16);
     }
     
     // 16 bits
     public int autorityRRNumber () {
-        return BinaryUtils.extractInt(frame, pduOrigin+8, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, pduOrigin+8, 0, 16);
     }
     
     // 16 bits
     public int additionalRRNumber () {
-        return BinaryUtils.extractInt(frame, pduOrigin+10, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, pduOrigin+10, 0, 16);
     }
 }
