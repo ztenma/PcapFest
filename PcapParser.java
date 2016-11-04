@@ -169,8 +169,60 @@ public class PcapParser {
         return layers;
     }
 
-    public String detectLayer (DataFrame frame, int offset, ProtocolSpec layers) {
+    /* Divide frames in protocol data units and return a list of them */ 
+    public List<ProtocolSpec> extractLayers (DataFrame frame) {
+        List<ProtocolSpec> layers = new ArrayList<ProtocolSpec>();
+        int frameOffset = 0, currentLayerLen = 0, i = 0;
+
+    }
         
+    public String detectLayer (DataFrame frame, int offset, ProtocolSpec lastLayer) {
+        // TODO
+        if (lastLayer == null) {
+            if (this.dataLinkType == 0) 
+                return "EthernetII"
+            else return "UnknownProtocol"
+        }
+        switch (lastLayer.name) {
+            case "EthernetII":
+                lastLayer = (EthernetII) lastLayer;
+                switch (lastLayer.etherType()) {
+                    case 0x0806: return "ARP";
+                    case 0x0800: return "IPv4";
+                    case 0x86DD: return "IPv6";
+                    default: return "UnknownProtocol";
+                }
+            break;
+            case "IPv4":
+                lastLayer = (IPv4) lastLayer;
+                switch (lastLayer.protocol()) {
+                    case 1: return "ICMP";
+                    case 6: return "TCP";
+                    case 17: return "UDP";
+                    default: return "UnknownProtocol";
+                }
+            break;
+            case "TCP":
+                lastLayer = (TCP) lastLayer;
+                int layerOffset = offset + lastLayer.headerLength();
+                if (HTTP.test(frame, layerOffset))
+                    return "HTTP";
+                if (DNS.test(frame, layerOffset))
+                    return "DNS";
+                return "UnknownProtocol";
+            break;
+            case "UDP":
+                lastLayer = (UDP) lastLayer;
+                int layerOffset = offset + lastLayer.headerLength();
+                if (DHCP.test(frame, layerOffset))
+                    return "DHCP";
+                if (DNS.test(frame, layerOffset))
+                    return "DNS";
+                return "UnknownProtocol";
+            break;
+            default:
+                return "UnknownProtocol"; 
+        }
     }
 
     public static void main (String[] args) {

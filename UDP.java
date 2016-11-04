@@ -7,36 +7,32 @@ public class UDP extends ProtocolSpec {
     private DataFrame frame;
     private ByteBuffer frameBytes;
 
+    private int headerOrigin;
 
-    private int pduOrigin;
-    private int pduLength;
-
-
-    public UDP (DataFrame frame, int pduOrigin, int pduLength) {
+    public UDP (DataFrame frame, int headerOrigin) {
         this.frame = frame;
         this.frameBytes = frame.getBytes();
-        this.pduOrigin = pduOrigin;
-        this.pduLength = pduLength;
+        this.headerOrigin = headerOrigin;
     }
-	
-	// 16 bits
-	public int srcPort () {
-		return BinaryUtils.extractInt(frame, pduOrigin, 0, 16);
-	}
-	
-	// 16 bits
-	public int dstPort () {
-		return BinaryUtils.extractInt(frame, pduOrigin+2, 0, 16);
-	}
-	
-	// 16 bits
-	public int length () {
-		return BinaryUtils.extractInt(frame, pduOrigin+4, 0, 16);
-	}
-	
-	// 16 bits
-	public int checksum () {
-		return BinaryUtils.extractInt(frame, pduOrigin+6, 0, 16);
-	}
-	
+
+    // 16 bits
+    public int srcPort () {
+        return BinaryUtils.extractInt(frame, headerOrigin, 0, 16);
+    }
+
+    // 16 bits
+    public int dstPort () {
+        return BinaryUtils.extractInt(frame, headerOrigin+2, 0, 16);
+    }
+
+    // 16 bits
+    public int length () {
+        return BinaryUtils.extractInt(frame, headerOrigin+4, 0, 16);
+    }
+
+    // 16 bits
+    public int checksum () {
+        return BinaryUtils.extractInt(frame, headerOrigin+6, 0, 16);
+    }
+
 }
