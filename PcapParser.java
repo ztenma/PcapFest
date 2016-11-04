@@ -116,64 +116,37 @@ public class PcapParser {
         return frames;
     }
    
+
     /* Divide frames in protocol data units and return a list of them */ 
     public List<ProtocolSpec> extractLayers (DataFrame frame) {
         List<ProtocolSpec> layers = new ArrayList<ProtocolSpec>();
         int frameOffset = 0, currentLayerLen = 0, i = 0;
+        ProtocolSpec lastLayer = null;
+        String protoName;
 
-        if (this.dataLinkType != 0) {
-            layers.add(new UnknownProtocol());
-            return layers;
-        } // Ethernet
-        EthernetII ethernet = new EthernetII(frame, 0, frame.length()-4)
-        layers.add(ethernet);
-        frameOffset += layers.get(i).headerLength();
-        i++;
+        do {
+            protoName = this.detectLayer(frame, frameOffset, lastLayer);
 
-        if (ethernet.etherType == 0x0806) {
-            layers.add(new ARP(frame, frameOffset);
-            return layers;
-        } else if (ethernet.etherType == 0x0800) {
-            layers.add(new IPv4(frame, frameOffset);
-        } else {
-            layers.add(new UnknownProtocol());
-            return layers;
-        } // IPv4
-        frameOffset += layers.get(i).headerLength();
-        i++;
+            switch (protoName) {
+                case "EthernetII": lastLayer = new EthernetII(frame, frameOffset); break;
+                case "ARP": lastLayer = new ARP(frame, frameOffset); break;
+                case "IPv4": lastLayer = new IPv4(frame, frameOffset); break;
+                case "ICMP": lastLayer = new ICMP(frame, frameOffset); break;
+                case "TCP": lastLayer = new TCP(frame, frameOffset); break;
+                case "UDP": lastLayer = new UDP(frame, frameOffset); break;
+                case "HTTP": lastLayer = new HTTP(frame, frameOffset); break;
+                case "DNS": lastLayer = new DNS(frame, frameOffset); break;
+                case "DHCP": lastLayer = new DHCP(frame, frameOffset); break;
+                default: "UnknownProtocol": lastLayer = new UnknownProtocol(frame, frameOffset);
+            }
 
-        IPv4 ip = layers.get(i-1);
-        if (ip.protocol == 1) {
-            layers.add(new ICMP(frame, frameOffset);   
-            return layers;
-        } else if (ip.protocol == 6) {
-            layers.add(new TCP(frame, frameOffset);   
-        } else if (ip.protocol == 17) {
-            layers.add(new UDP(frame, frameOffset);   
-        } else { 
-            layers.add(new UnknownProtocol());
-            return layers;
-        }
-        frameOffset += layers.get(i).headerLength();
-        i++;
+            layers.add(ethernet);
+            frameOffset += layers.get(i).headerLength();
+            i++;
 
-        ProtocolSpec proto = layers.get(i-1);
-        if (proto.name.equals("TCP") {
-            TCP tcp = (TCP) proto;
-            //if (tcp.port
-            // TODO: general layer detection function
-        } else if (proto.name.equals("UDP") {
-            
-        }
+        } while (frameOffset < frame.length() && lastLayer.name != "UnknownProtocol" && layerLayer.OSILayer != 7);
 
         return layers;
-    }
-
-    /* Divide frames in protocol data units and return a list of them */ 
-    public List<ProtocolSpec> extractLayers (DataFrame frame) {
-        List<ProtocolSpec> layers = new ArrayList<ProtocolSpec>();
-        int frameOffset = 0, currentLayerLen = 0, i = 0;
-
     }
         
     public String detectLayer (DataFrame frame, int offset, ProtocolSpec lastLayer) {

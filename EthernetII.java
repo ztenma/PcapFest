@@ -13,11 +13,11 @@ public class EthernetII extends ProtocolSpec {
     // For Checksum
     private int footerOrigin;
 
-    public static int headerLength (DataFrame frame, int offset) {
+    public static int headerSize (DataFrame frame, int offset) {
         return 14;
     }
 
-    public static int footerLength (DataFrame frame, int offset) {
+    public static int footerSize (DataFrame frame, int offset) {
         return 4; // TODO: padding?
     }
 

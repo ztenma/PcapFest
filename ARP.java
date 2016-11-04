@@ -1,3 +1,4 @@
+import java.nio.ByteBuffer;
 
 public class ARP extends ProtocolSpec {
 
@@ -13,6 +14,15 @@ public class ARP extends ProtocolSpec {
         this.frame = frame;
         this.frameBytes = frame.getBytes();
         this.headerOrigin = headerOrigin
+    }
+
+    public static boolean test (ByteBuffer bytes, int offset) {
+        ARP arp = new ARP(bytes, offset);
+        return false;
+    }
+
+    public static int headerSize () {
+        return 28;
     }
 
     // 16 bits

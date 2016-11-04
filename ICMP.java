@@ -1,3 +1,4 @@
+import java.nio.ByteBuffer;
 
 public class ICMP extends ProtocolSpec {
 
@@ -14,6 +15,15 @@ public class ICMP extends ProtocolSpec {
         this.frameBytes = frame.getBytes();
         this.headerOrigin = headerOrigin;
     }	
+
+    public static boolean test (ByteBuffer bytes, int offset) {
+        return false;
+    }
+   
+    public static int headerSize () {
+        return 64;
+    }
+
     // 8 bits
     public int type () {
         return BinaryUtils.extractInt(frame, headerOrigin, 0, 8);
