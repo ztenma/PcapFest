@@ -30,19 +30,20 @@ public class BinaryUtils {
         return val;
     }
 
-    public static String extractHexString (byte[] bytes, int offset, int len) {
+    /*public static String extractHexString (byte[] bytes, int offset, int len) {
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < len; i++) {
             s.append(String.format("%02X", bytes[offset + i]));
         }
         return s.toString();
-    }
+    }*/
     
     public static String extractHexString (ByteBuffer bytes, int offset, int len) {
         return DatatypeConverter.printHexBinary(bytes.array());
     }
 
-    public static String extractMACAddress (byte[] bytes, int offset, int len) {
+    public static String extractMACAddress (ByteBuffer bytes, int offset, int len) {
+        byte[] bytearray = bytes.array();
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < len; i++) {
             s.append(String.format("%02X:", bytes[offset + i]));
