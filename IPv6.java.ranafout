@@ -22,6 +22,10 @@ public class IPv6 implements ProtocolSpec {
         return true;
     }
 
+    public String name () { return name; }
+
+    public int OSILayer () { return OSILayer; }
+
     public int headerSize (DataFrame frame, int offset) {
         return 40;
     }

@@ -12,6 +12,10 @@ public class UnknownProtocol implements ProtocolSpec {
         return true;
     }
 
+    public String name () { return name; }
+
+    public int OSILayer () { return OSILayer; }
+
     public int headerSize (DataFrame frame, int offset) {
         return -1; 
     }

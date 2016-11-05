@@ -19,7 +19,11 @@ public class ICMP implements ProtocolSpec {
     public static boolean test (DataFrame frame, int offset) {
         return true;
     }
-   
+
+    public String name () { return name; }
+
+    public int OSILayer () { return OSILayer; }
+
     public int headerSize (DataFrame frame, int offset) {
         return 64;
     }

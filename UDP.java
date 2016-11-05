@@ -20,6 +20,10 @@ public class UDP implements ProtocolSpec {
         return true;
     }
 
+    public String name () { return name; }
+
+    public int OSILayer () { return OSILayer; }
+
     public int headerSize (DataFrame frame, int offset) {
         UDP udp = new UDP(frame, offset);
         return udp.length();

@@ -16,7 +16,6 @@ public class DNS implements ProtocolSpec {
         this.pduOrigin = pduOrigin;
     }
 
-
     public static boolean test (DataFrame frame, int offset) {
         //http://stackoverflow.com/questions/7565300/identifying-dns-packets
         DNS dns = new DNS(frame, offset);
@@ -34,6 +33,10 @@ public class DNS implements ProtocolSpec {
         return true;
     }
     // http://repository.root-me.org/R%C3%A9seau/FR%20-%20Les%20r%C3%A9seaux%20Ethernet%20-%20le%20format%20des%20trames.pdf
+
+    public String name () { return name; }
+
+    public int OSILayer () { return OSILayer; }
 
     public int headerSize (DataFrame frame, int offset) {
         return 12;

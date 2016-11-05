@@ -18,10 +18,16 @@ public class EthernetII implements ProtocolSpec {
         this.headerOrigin = headerOrigin;
         this.footerOrigin = -1;
     }
-    
-    public int headerSize (DataFrame frame, int offset) {
-        return 14;
+
+    public static boolean test (DataFrame frame, int offset) {
+        return true;
     }
+
+    public String name () { return name; }
+
+    public int OSILayer () { return OSILayer; }
+
+    public int headerSize (DataFrame frame, int offset) { return 14; }
 
     public int footerSize (DataFrame frame, int offset) {
         return 4; // TODO: padding?
@@ -45,5 +51,13 @@ public class EthernetII implements ProtocolSpec {
 
     public int checksum () {
         return BinaryUtils.extractIntByte(frameBytes, footerOrigin, 4);
+    }
+
+    @Override
+    public String toString() {
+        return "EthernetII{" +
+                "srcMAC=" + srcMAC() +
+                ",dstMAC=" + dstMAC() +
+                '}';
     }
 }

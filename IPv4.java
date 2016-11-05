@@ -20,6 +20,10 @@ public class IPv4 implements ProtocolSpec {
         return true; //TODO
     }
 
+    public String name () { return name; }
+
+    public int OSILayer () { return OSILayer; }
+
     public int headerSize (DataFrame frame, int offset) {
         IPv4 iPv4 = new IPv4(frame, offset);
         return iPv4.ihl()* 4;  // headerSize
@@ -68,15 +72,14 @@ public class IPv4 implements ProtocolSpec {
         return BinaryUtils.extractInt(frameBytes, headerOrigin+10, 0, 16);
     }
 
-    // TODO : convertir IP en notation pointe
     // 32 bits
-    public int srcIP () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+12, 0, 32);
+    public String srcIP () {
+        return BinaryUtils.extractIPv4Address(frameBytes, headerOrigin+12, 4);
     }
 
     // 32 bits
-    public int dstIP () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+16, 0, 32);
+    public String dstIP () {
+        return BinaryUtils.extractIPv4Address(frameBytes, headerOrigin+16, 4);
     }
 
     @Override
@@ -84,8 +87,8 @@ public class IPv4 implements ProtocolSpec {
         return "IPv4{" +
                 "srcIP=" + srcIP() + "," +
                 "dstIP=" + dstIP() + "," +
-                "ttl=" + ttl() + "," +
-                "proto=" + proto() +
+                "flags=" + flags() + "," +
+                "ttl=" + ttl() +
                 '}';
     }
 }

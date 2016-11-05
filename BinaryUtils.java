@@ -1,4 +1,5 @@
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import javax.xml.bind.DatatypeConverter;
 
 public class BinaryUtils {
@@ -16,17 +17,28 @@ public class BinaryUtils {
     }*/
 
     public static int extractIntByte (ByteBuffer bytes, int byteOffset, int byteLen) {
-        return extractInt(bytes, byteOffset, 0, byteLen*8);
+        return extractInt(bytes, byteOffset, 0, byteLen*8, false);
+    }
+
+    public static int extractIntByte (ByteBuffer bytes, int byteOffset, int byteLen, boolean littleEndian) {
+        return extractInt(bytes, byteOffset, 0, byteLen*8, littleEndian);
     }
 
     public static int extractInt (ByteBuffer bytes, int byteOffset, int bitOffset, int bitLen) {
-        if (bitOffset < 0 || bitOffset >= 32 || bitLen < 0 || bitLen >= 32)
+        return extractInt(bytes,byteOffset, bitOffset, bitLen, false);
+    }
+
+    public static int extractInt (ByteBuffer bytes, int byteOffset, int bitOffset, int bitLen, boolean littleEndian) {
+        if (bitOffset < 0 || bitOffset >= 32 || bitLen < 0 || bitLen > 32)
             return 0;
-        int val = ((ByteBuffer)bytes.position(byteOffset)).getInt();
-        /*if (bitOffset != 0 && bitLen != 0) {
-            int mask = (0xFFFFFFFF << 8 - bitLen) >>> bitOffset;
-            val = val & mask;
-        }*/
+        ByteBuffer buf = (ByteBuffer)bytes.position(byteOffset);
+        ByteOrder endianness = (littleEndian ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+        int val = buf.order(endianness).getInt();
+        if (!(bitOffset == 0 && bitLen == 32)) {
+            int mask = (0xFFFFFFFF << 32 - bitLen) >>> bitOffset;
+            int finalOffset = (32 - bitOffset - bitLen);
+            val = (val & mask) >>> finalOffset;
+        }
         return val;
     }
 
@@ -48,7 +60,25 @@ public class BinaryUtils {
         for (int i = 0; i < len; i++) {
             s.append(String.format("%02X:", bytearray[offset + i]));
         }
-        return s.deleteCharAt(len-1).toString();
+        return s.deleteCharAt(s.length()-1).toString();
+    }
+
+    public static String extractIPv4Address (ByteBuffer bytes, int offset, int len) {
+        byte[] bytearray = bytes.array();
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < len; i++) {
+            s.append(String.format("%d.", bytearray[offset + i] & 0xFF));
+        }
+        return s.deleteCharAt(s.length()-1).toString();
+    }
+
+    public static String extractIPv6Address (ByteBuffer bytes, int offset, int len) {
+        byte[] bytearray = bytes.array();
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < len/2; i++) {
+            s.append(String.format("%02X%02X:", bytearray[offset + i], bytearray[offset + i + 1]));
+        }
+        return s.deleteCharAt(s.length()-1).toString();
     }
     
     public static String toHexString (byte[] bytes, boolean withAscii) {

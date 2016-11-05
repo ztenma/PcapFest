@@ -20,6 +20,10 @@ public class TCP implements ProtocolSpec {
         return true;
     }
 
+    public String name () { return name; }
+
+    public int OSILayer () { return OSILayer; }
+
     public int headerSize (DataFrame frame, int offset) {
         TCP tcp = new TCP(frame, offset);
         return tcp.dataOffset() * 4;

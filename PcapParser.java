@@ -33,16 +33,16 @@ public class PcapParser {
     }
 
     public int inclLen (int recordOffset) {
-        return BinaryUtils.extractIntByte(bytes, recordOffset + 8, 4);
+        return BinaryUtils.extractIntByte(bytes, recordOffset + 8, 4, true);
     }
 
     public int origLen (int recordOffset) {
-        return BinaryUtils.extractIntByte(bytes, recordOffset + 12, 4);
+        return BinaryUtils.extractIntByte(bytes, recordOffset + 12, 4, true);
     }
 
     /* Parses the beginning of the file and returns whether this file is parsable by this parser */
     public boolean parseGlobalHeader () {
-        this.dataLinkType = BinaryUtils.extractIntByte(bytes, 20, 4);
+        this.dataLinkType = BinaryUtils.extractIntByte(bytes, 20, 4, true);
         return this.bytes.limit() > 40 && this.isPcap() && this.dataLinkType == 0;
     }
 
@@ -62,7 +62,7 @@ public class PcapParser {
             /* Parse record data (splitted frames) */
             // New frame
             if (currentFrameLen == 0) {
-                frameBytes = ByteBuffer.allocateDirect(origLen);
+                frameBytes = ByteBuffer.allocate(origLen);
             }
 
             // Extract record to frame
@@ -72,12 +72,14 @@ public class PcapParser {
             // End frame
             if (currentFrameLen == origLen) {
                 currentFrameLen = 0; 
-                frames.add(new DataFrame(frameBytes));
+                DataFrame newFrame = new DataFrame(frameBytes);
+                System.out.println("Parsed frame: " + newFrame + "\n" + BinaryUtils.toHexString(frameBytes.array(), true, 0, frameBytes.limit()));
+                frames.add(newFrame);
             } else if (currentFrameLen > origLen) throw new PcapParserException();
 
-            recordOffset += recordHeaderLength + inclLen;
+            recordOffset += inclLen;
             
-        } while (recordOffset < this.bytes.limit()); // TODO: break somewhere!
+        } while (recordOffset < this.bytes.limit());
 
         return frames;
     }
@@ -110,10 +112,10 @@ public class PcapParser {
             frameOffset += layers.get(i).headerSize(frame, frameOffset);
             i++;
 
-        } while (frameOffset < frame.length() && lastLayer.name != "UnknownProtocol" && lastLayer.OSILayer != 7);
+        } while (frameOffset < frame.length() && !lastLayer.name().equals("UnknownProtocol") && lastLayer.OSILayer() != 7);
 
         for (ProtocolSpec proto : layers)
-            if (proto.name.equals("EthernetII")) {
+            if (proto.name().equals("EthernetII")) {
                 ((EthernetII)proto).setFooterOrigin(frameOffset);
                 break;
             }
@@ -129,7 +131,7 @@ public class PcapParser {
             else return "UnknownProtocol";
         }
         
-        switch (lastLayer.name) {
+        switch (lastLayer.name()) {
             case "EthernetII":
                 EthernetII ethernet = (EthernetII) lastLayer;
                 switch (ethernet.etherType()) {
@@ -157,10 +159,10 @@ public class PcapParser {
             case "UDP":
                 lastLayer = (UDP) lastLayer;
                 layerOffset = offset + lastLayer.headerSize(frame, offset);
-                if (DHCP.test(frame, layerOffset))
-                    return "DHCP";
                 if (DNS.test(frame, layerOffset))
                     return "DNS";
+                if (DHCP.test(frame, layerOffset))
+                    return "DHCP";
                 return "UnknownProtocol";
             default:
                 return "UnknownProtocol"; 
@@ -171,7 +173,7 @@ public class PcapParser {
         List<DataFrame> filtered = new ArrayList<DataFrame>();
         for (DataFrame frame : frames)
             for (ProtocolSpec proto : frame.layers())
-                if (proto.name.equals(filterProtoName)) {
+                if (proto.name().equals(filterProtoName)) {
                     filtered.add(frame);
                     break;
                 }
@@ -190,9 +192,12 @@ public class PcapParser {
             List<DataFrame> frames = parser.extractFrames();
             for (DataFrame frame : frames) {
                 frame.setLayers(parser.extractLayers(frame));
+            }
+            System.out.println("All frames:\n");
+            for (DataFrame frame : frames) {
                 System.out.println(frame);
             }
-            System.out.println('\n');
+            System.out.println("\nFilter: " + filterProtoName + '\n');
             for (DataFrame frame : parser.filterProtocol(frames, filterProtoName)) {
                 System.out.println(frame);
             }
