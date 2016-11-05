@@ -20,7 +20,7 @@ public class IPv4 implements ProtocolSpec {
         return true; //TODO
     }
 
-    public static int headerSize (DataFrame frame, int offset) {
+    public int headerSize (DataFrame frame, int offset) {
         IPv4 iPv4 = new IPv4(frame, offset);
         return iPv4.ihl()* 4;  // headerSize
     }

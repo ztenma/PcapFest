@@ -20,7 +20,7 @@ public class UDP implements ProtocolSpec {
         return true;
     }
 
-    public static int headerSize (DataFrame frame, int offset) {
+    public int headerSize (DataFrame frame, int offset) {
         UDP udp = new UDP(frame, offset);
         return udp.length();
     }

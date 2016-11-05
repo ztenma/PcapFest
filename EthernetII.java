@@ -19,11 +19,11 @@ public class EthernetII implements ProtocolSpec {
         this.footerOrigin = -1;
     }
     
-    public static int headerSize (DataFrame frame, int offset) {
+    public int headerSize (DataFrame frame, int offset) {
         return 14;
     }
 
-    public static int footerSize (DataFrame frame, int offset) {
+    public int footerSize (DataFrame frame, int offset) {
         return 4; // TODO: padding?
     }
 
