@@ -17,7 +17,15 @@ public class IPv6 implements ProtocolSpec {
         this.frameBytes = frame.bytes();
         this.headerOrigin = pduOrigin;
     }
- 
+
+    public static boolean test (DataFrame frame, int offset) {
+        return true;
+    }
+
+    public int headerSize (DataFrame frame, int offset) {
+        return 40;
+    }
+
 	// 4 bits
 	public int version () {
         return BinaryUtils.extractInt(frameBytes, headerOrigin, 0, 4);
