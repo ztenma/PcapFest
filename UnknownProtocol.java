@@ -8,15 +8,15 @@ public class UnknownProtocol implements ProtocolSpec {
     public UnknownProtocol (DataFrame frame, int headerOffset) {
     }
 
-    public static boolean test (ByteBuffer bytes, int offset) {
+    public static boolean test (DataFrame frame, int offset) {
         return true;
     }
 
-    public static int headerSize (ByteBuffer bytes, int offset) {
+    public int headerSize (DataFrame frame, int offset) {
         return -1; 
     }
 
-    public static int footerSize (ByteBuffer bytes, int offset) {
+    public int footerSize (DataFrame frame, int offset) {
         return -1;
     }
 }
