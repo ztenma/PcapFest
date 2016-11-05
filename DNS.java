@@ -29,7 +29,7 @@ public class DNS implements ProtocolSpec {
                     return true;
             if ((flags & 0x8000) == 0x8000 // response
                 && dns.answersRRNumber() == 1)
-                    return true;
+                    return false;
         }
         return true;
     }
