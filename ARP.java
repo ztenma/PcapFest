@@ -21,6 +21,10 @@ public class ARP implements ProtocolSpec {
         return true;
     }
 
+    public String name () { return name; }
+
+    public int OSILayer () { return OSILayer; }
+
     public int headerSize (DataFrame frame, int offset) {
         return 28;
     }
@@ -50,15 +54,14 @@ public class ARP implements ProtocolSpec {
         return BinaryUtils.extractInt(frameBytes, headerOrigin+6, 0, 16);
     }
 
-    // TODO : convertir IP
     // 48 bits = 6 octets
     public String srcMAC () {
         return BinaryUtils.extractMACAddress(frameBytes, headerOrigin+8, 6);
     }
 
     // 32 bits
-    public int srcIP () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+14, 0, 32);
+    public String srcIP () {
+        return BinaryUtils.extractIPv4Address(frameBytes, headerOrigin+14, 4);
     }
 
     // 48 bits
@@ -67,8 +70,8 @@ public class ARP implements ProtocolSpec {
     }
 
     // 32 bits
-    public int dstIP () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+24, 0, 32);
+    public String dstIP () {
+        return BinaryUtils.extractIPv4Address(frameBytes, headerOrigin+24, 4);
     }
 
     @Override

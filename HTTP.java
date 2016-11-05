@@ -18,13 +18,17 @@ public class HTTP implements ProtocolSpec {
         this.headerOrigin = headerOrigin;
     }
 
+    public static boolean test (DataFrame frame, int offset) {
+        return new HTTP(frame, offset).initialLine().contains("HTTP/");
+    }
+
+    public String name () { return name; }
+
+    public int OSILayer () { return OSILayer; }
+
     public int headerSize (DataFrame frame, int offset) {
         HTTP http = new HTTP(frame, offset);
         return frame.bytes().limit() - offset;
-    }
-
-    public static boolean test (DataFrame frame, int offset) {
-        return new HTTP(frame, offset).initialLine().contains("HTTP/");
     }
 
     // 16 bits

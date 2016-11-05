@@ -32,7 +32,7 @@ public class DataFrame {
 
     public ProtocolSpec layer (String layerName) {
         for (ProtocolSpec proto : this.layers) {
-            if (proto.name.equals(layerName))
+            if (proto.name().equals(layerName))
                 return proto;
         }
         return null;
