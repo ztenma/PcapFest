@@ -18,7 +18,7 @@ public class HTTP implements ProtocolSpec {
         this.headerOrigin = headerOrigin;
     }
 
-    public static int headerSize (DataFrame frame, int offset) {
+    public int headerSize (DataFrame frame, int offset) {
         HTTP http = new HTTP(frame, offset);
         return frame.bytes().limit() - offset;
     }

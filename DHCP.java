@@ -22,7 +22,7 @@ public class DHCP implements ProtocolSpec {
         return true;
     }
 
-    public static int headerSize (DataFrame frame, int offset) {
+    public int headerSize (DataFrame frame, int offset) {
 
         return -1; // TODO
     }

@@ -35,7 +35,7 @@ public class DNS implements ProtocolSpec {
     }
     // http://repository.root-me.org/R%C3%A9seau/FR%20-%20Les%20r%C3%A9seaux%20Ethernet%20-%20le%20format%20des%20trames.pdf
 
-    public static int headerSize (DataFrame frame, int offset) {
+    public int headerSize (DataFrame frame, int offset) {
         return 12;
     }
 

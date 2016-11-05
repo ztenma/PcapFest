@@ -20,7 +20,7 @@ public class TCP implements ProtocolSpec {
         return true;
     }
 
-    public static int headerSize (DataFrame frame, int offset) {
+    public int headerSize (DataFrame frame, int offset) {
         TCP tcp = new TCP(frame, offset);
         return tcp.dataOffset() * 4;
     }

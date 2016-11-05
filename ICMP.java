@@ -20,7 +20,7 @@ public class ICMP implements ProtocolSpec {
         return true;
     }
    
-    public static int headerSize () {
+    public int headerSize (DataFrame frame, int offset) {
         return 64;
     }
 
