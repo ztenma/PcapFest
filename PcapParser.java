@@ -52,7 +52,7 @@ public class PcapParser {
         // packet header: 16 bytes
         List<DataFrame> frames = new ArrayList<DataFrame>();
         int recordOffset = globalHeaderLength, currentFrameLen = 0, inclLen, origLen;
-        ByteBuffer frameBytes;
+        ByteBuffer frameBytes = null;
         do {
             /* Parse records header */
             inclLen = inclLen(recordOffset);
@@ -74,9 +74,9 @@ public class PcapParser {
                 frames.add(new DataFrame(frameBytes));
             } else if (currentFrameLen > origLen) throw new PcapParserException();
 
-            recordOffset += inclLen;
+            recordOffset += recordHeaderLength + inclLen;
             
-        } while (true); // TODO: break somewhere!
+        } while (recordOffset < this.bytes.limit()); // TODO: break somewhere!
 
         return frames;
     }
@@ -137,7 +137,6 @@ public class PcapParser {
                     case 0x86DD: return "IPv6";
                     default: return "UnknownProtocol";
                 }
-            break;
             case "IPv4":
                 IPv4 ip = (IPv4) lastLayer;
                 switch (ip.proto()) {
@@ -146,7 +145,6 @@ public class PcapParser {
                     case 17: return "UDP";
                     default: return "UnknownProtocol";
                 }
-            break;
             case "TCP":
                 lastLayer = (TCP) lastLayer;
                 layerOffset = offset + lastLayer.headerSize(frame, offset);
@@ -155,7 +153,6 @@ public class PcapParser {
                 if (DNS.test(frame, layerOffset))
                     return "DNS";
                 return "UnknownProtocol";
-            break;
             case "UDP":
                 lastLayer = (UDP) lastLayer;
                 layerOffset = offset + lastLayer.headerSize(frame, offset);
@@ -164,7 +161,6 @@ public class PcapParser {
                 if (DNS.test(frame, layerOffset))
                     return "DNS";
                 return "UnknownProtocol";
-            break;
             default:
                 return "UnknownProtocol"; 
         }
