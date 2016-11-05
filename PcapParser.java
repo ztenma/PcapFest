@@ -16,7 +16,7 @@ public class PcapParser {
     private int dataLinkType;
 
     public PcapParser (byte[] bytes) {
-        this.bytes = ByteBuffer.wrap(bytes).asReadOnlyBuffer();
+        this.bytes = ByteBuffer.wrap(bytes);
     }
     
     public String toString () {
@@ -57,6 +57,7 @@ public class PcapParser {
             /* Parse records header */
             inclLen = inclLen(recordOffset);
             origLen = origLen(recordOffset);
+            recordOffset += recordHeaderLength;
 
             /* Parse record data (splitted frames) */
             // New frame
@@ -64,8 +65,9 @@ public class PcapParser {
                 frameBytes = ByteBuffer.allocateDirect(origLen);
             }
 
+            System.out.println();
             // Extract record to frame
-            frameBytes.put(bytes.array(), recordOffset + recordHeaderLength, inclLen);
+            frameBytes.put(bytes.array(), recordOffset, inclLen);
             currentFrameLen += inclLen;
 
             // End frame
@@ -74,7 +76,7 @@ public class PcapParser {
                 frames.add(new DataFrame(frameBytes));
             } else if (currentFrameLen > origLen) throw new PcapParserException();
 
-            recordOffset += recordHeaderLength + inclLen;
+            recordOffset += inclLen;
             
         } while (recordOffset < this.bytes.limit()); // TODO: break somewhere!
 
