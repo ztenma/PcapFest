@@ -12,13 +12,13 @@ public class ARP implements ProtocolSpec {
 
     public ARP (DataFrame frame, int headerOrigin) {
         this.frame = frame;
-        this.frameBytes = frame.getBytes();
+        this.frameBytes = frame.bytes();
         this.headerOrigin = headerOrigin;
     }
 
-    public static boolean test (ByteBuffer bytes, int offset) {
-        ARP arp = new ARP(bytes, offset);
-        return false;
+    public static boolean test (DataFrame frame, int offset) {
+        ARP arp = new ARP(frame, offset);
+        return true;
     }
 
     public static int headerSize () {
@@ -53,7 +53,7 @@ public class ARP implements ProtocolSpec {
     // TODO : convertir IP
     // 48 bits = 6 octets
     public String srcMAC () {
-        return extractMACAddress(frameBytes, headerOrigin+8, 6);
+        return BinaryUtils.extractMACAddress(frameBytes, headerOrigin+8, 6);
     }
 
     // 32 bits
@@ -63,7 +63,7 @@ public class ARP implements ProtocolSpec {
 
     // 48 bits
     public String dstMAC () {
-        return extractMACAddress(frameBytes, headerOrigin+18, 6);
+        return BinaryUtils.extractMACAddress(frameBytes, headerOrigin+18, 6);
     }
 
     // 32 bits

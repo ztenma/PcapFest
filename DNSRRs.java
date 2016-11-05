@@ -1,3 +1,4 @@
+import java.nio.ByteBuffer;
 
 public class DNSRRs implements ProtocolSpec {
 
@@ -7,16 +8,12 @@ public class DNSRRs implements ProtocolSpec {
     private DataFrame frame;
     private ByteBuffer frameBytes;
 
-    private int pduOrigin;
-    private int pduLength;
-    private int pduTailOrigin;
+    private int headerOrigin;
 
-    public DNSRRs (DataFrame frame, int pduOrigin, int pduLength) {
+    public DNSRRs (DataFrame frame, int headerOrigin) {
         this.frame = frame;
-        this.frameBytes = frame.getBytes();
-        this.pduOrigin = pduOrigin;
-        this.pduLength = pduLength;
-        this.pduTailOrigin = pduTailOrigin;
+        this.frameBytes = frame.bytes();
+        this.headerOrigin = headerOrigin;
     }
 
     // ? bits
@@ -27,22 +24,22 @@ public class DNSRRs implements ProtocolSpec {
     
     // 8 bits
     public int type () {
-        return BinaryUtils.extractInt(frameBytes, pduTailOrigin, 0, 8);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin, 0, 8);
     }
     
     // 8 bits
     public int classe () {
-        return BinaryUtils.extractInt(frameBytes, pduTailOrigin+1, 0, 8);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+1, 0, 8);
     }
     
     // 16 bits
     public int ttl () {
-        return BinaryUtils.extractInt(frameBytes, pduTailOrigin+2, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+2, 0, 16);
     }
     
     // 8 bits
     public int length () {
-        return BinaryUtils.extractInt(frameBytes, pduTailOrigin+4, 0, 8);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+4, 0, 8);
     }
     
     // ? bits

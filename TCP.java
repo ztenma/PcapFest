@@ -12,16 +12,17 @@ public class TCP implements ProtocolSpec {
 
     public TCP (DataFrame frame, int headerOrigin) {
         this.frame = frame;
-        this.frameBytes = frame.getBytes();
+        this.frameBytes = frame.bytes();
         this.headerOrigin = headerOrigin;
     }
 
-    public static boolean test (ByteBuffer bytes, int offset) {
-        return false;
+    public static boolean test (DataFrame frame, int offset) {
+        return true;
     }
 
-    public static int headerSize () {
-        return this.dataOffset * 4;
+    public static int headerSize (DataFrame frame, int offset) {
+        TCP tcp = new TCP(frame, offset);
+        return tcp.dataOffset() * 4;
     }
 
     // 16 bits
