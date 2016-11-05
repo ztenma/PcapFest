@@ -78,5 +78,15 @@ public class IPv4 implements ProtocolSpec {
     public int dstIP () {
         return BinaryUtils.extractInt(frameBytes, headerOrigin+16, 0, 32);
     }
+
+    @Override
+    public String toString() {
+        return "IPv4{" +
+                "srcIP=" + srcIP() + "," +
+                "dstIP=" + dstIP() + "," +
+                "ttl=" + ttl() + "," +
+                "proto=" + proto() +
+                '}';
+    }
 }
 

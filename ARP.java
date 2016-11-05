@@ -70,4 +70,14 @@ public class ARP implements ProtocolSpec {
     public int dstIP () {
         return BinaryUtils.extractInt(frameBytes, headerOrigin+24, 0, 32);
     }
+
+    @Override
+    public String toString() {
+        return "ARP{" +
+                "srcMAC=" + srcMAC() + "," +
+                "srcIP=" + srcIP() + "," +
+                "dstMAC=" + dstMAC() + "," +
+                "dstIP=" + dstIP() +
+                '}';
+    }
 }

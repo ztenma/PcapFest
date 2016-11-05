@@ -44,4 +44,12 @@ public class ICMP implements ProtocolSpec {
         return BinaryUtils.extractInt(frameBytes, headerOrigin+4, 0, 32);
     }
 
+    @Override
+    public String toString() {
+        return "ICMP{" +
+                "type=" + type() + "," +
+                "code=" + code() +
+                '}';
+    }
+
 }

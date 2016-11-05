@@ -29,7 +29,7 @@ public class DNS implements ProtocolSpec {
                     return true;
             if ((flags & 0x8000) == 0x8000 // response
                 && dns.answersRRNumber() == 1)
-                    return false;
+                    return true;
         }
         return true;
     }
@@ -67,5 +67,13 @@ public class DNS implements ProtocolSpec {
     // 16 bits
     public int additionalRRNumber () {
         return BinaryUtils.extractInt(frameBytes, pduOrigin+10, 0, 16);
+    }
+
+    @Override
+    public String toString() {
+        return "DNS{" +
+                "QUERY code=" + (flags() & 0x8000) + "," +
+                "RESPOND code=" + (flags() & 0x8000) +
+                '}';
     }
 }

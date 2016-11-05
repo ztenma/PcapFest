@@ -49,4 +49,11 @@ public class HTTP implements ProtocolSpec {
     public String body () {
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "HTTP{" +
+                "InitialLine=" + initialLine() +
+                '}';
+    }
 }

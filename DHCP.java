@@ -24,7 +24,7 @@ public class DHCP implements ProtocolSpec {
 
     public static int headerSize (DataFrame frame, int offset) {
 
-        return -1;
+        return -1; // TODO
     }
 
     // 8 bits
@@ -99,5 +99,13 @@ public class DHCP implements ProtocolSpec {
     return BinaryUtils.extractInt(frameBytes, headerOrigin+108, 0, 1024);
     }
      **/
-
+    @Override
+    public String toString() {
+        return "DHCP{" +
+                "yourIP=" + yourIP() + "," +
+                "serverIP=" + serverIP() + "," +
+                "gatewayIP=" + gatewayIP() + "," +
+                "clientMAC=" + clientMAC() +
+                '}';
+    }
 }
