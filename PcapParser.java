@@ -75,7 +75,7 @@ public class PcapParser {
                 frames.add(new DataFrame(frameBytes));
             } else if (currentFrameLen > origLen) throw new PcapParserException();
 
-            recordOffset += inclLen;
+            recordOffset += recordHeaderLength + inclLen;
             
         } while (recordOffset < this.bytes.limit()); // TODO: break somewhere!
 
