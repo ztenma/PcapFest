@@ -12,13 +12,13 @@ public class DataFrame {
 
     private ByteBuffer bytes;
 
-    private ArrayList<ProtocolSpec> layers;
+    private List<ProtocolSpec> layers;
 
     public DataFrame (ByteBuffer frameBytes) {
         this.id = currentId++;
         this.length = frameBytes.limit();
         this.timestamp = 0;
-        this.bytes = frameBytes;//ByteBuffer.wrap(frameBytesBytes).asReadOnlyBuffer();
+        this.bytes = frameBytes;
         this.layers = new ArrayList<ProtocolSpec>();
     }
 
@@ -35,6 +35,7 @@ public class DataFrame {
             if (proto.name.equals(layerName))
                 return proto;
         }
+        return null;
     }
 
     public ByteBuffer bytes () {
@@ -53,7 +54,4 @@ public class DataFrame {
         return this.timestamp;
     }
 
-    public String toString() {
-
-    }
 }

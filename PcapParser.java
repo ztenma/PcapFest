@@ -121,7 +121,7 @@ public class PcapParser {
     }
         
     public String detectLayer (DataFrame frame, int offset, ProtocolSpec lastLayer) {
-        
+        int layerOffset;
         if (lastLayer == null) {
             if (this.dataLinkType == 0) 
                 return "EthernetII";
@@ -130,8 +130,8 @@ public class PcapParser {
         
         switch (lastLayer.name) {
             case "EthernetII":
-                lastLayer = (EthernetII) lastLayer;
-                switch (lastLayer.etherType()) {
+                EthernetII ethernet = (EthernetII) lastLayer;
+                switch (ethernet.etherType()) {
                     case 0x0806: return "ARP";
                     case 0x0800: return "IPv4";
                     case 0x86DD: return "IPv6";
@@ -139,8 +139,8 @@ public class PcapParser {
                 }
             break;
             case "IPv4":
-                lastLayer = (IPv4) lastLayer;
-                switch (lastLayer.protocol()) {
+                IPv4 ip = (IPv4) lastLayer;
+                switch (ip.proto()) {
                     case 1: return "ICMP";
                     case 6: return "TCP";
                     case 17: return "UDP";
@@ -149,7 +149,7 @@ public class PcapParser {
             break;
             case "TCP":
                 lastLayer = (TCP) lastLayer;
-                int layerOffset = offset + lastLayer.headerSize();
+                layerOffset = offset + lastLayer.headerSize(frame, offset);
                 if (HTTP.test(frame, layerOffset))
                     return "HTTP";
                 if (DNS.test(frame, layerOffset))
@@ -158,7 +158,7 @@ public class PcapParser {
             break;
             case "UDP":
                 lastLayer = (UDP) lastLayer;
-                int layerOffset = offset + lastLayer.headerSize();
+                layerOffset = offset + lastLayer.headerSize(frame, offset);
                 if (DHCP.test(frame, layerOffset))
                     return "DHCP";
                 if (DNS.test(frame, layerOffset))
@@ -185,10 +185,11 @@ public class PcapParser {
         String filename = (args.length > 0 ? args[0] : "icmping.pcap");
         String filterProtoName = (args.length > 1 ? args[1] : "EthernetII");
         try {
-            byte[] data = Files.readAllBytes(Paths.get());
+            byte[] data = Files.readAllBytes(Paths.get(filename));
             PcapParser parser = new PcapParser(data);
-            System.out.println(parser.toHexString(true, 40, 138)); // First ICMP packet
-            ArrayList<DataFrame> frames = parser.extractFrames();
+            System.out.println(BinaryUtils.toHexString(data, true, 40, 138)); // First ICMP packet
+            
+            List<DataFrame> frames = parser.extractFrames();
             for (DataFrame frame : frames) {
                 frame.setLayers(parser.extractLayers(frame));
                 System.out.println(frame);
