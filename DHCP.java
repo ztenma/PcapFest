@@ -12,11 +12,20 @@ public class DHCP implements ProtocolSpec {
 
     public DHCP (DataFrame frame, int headerOrigin) {
         this.frame = frame;
-        this.frameBytes = frame.getBytes();
+        this.frameBytes = frame.bytes();
         this.headerOrigin = headerOrigin;
     }
 
     // http://repository.root-me.org/R%C3%A9seau/FR%20-%20Les%20r%C3%A9seaux%20Ethernet%20-%20le%20format%20des%20trames.pdf
+
+    public static boolean test (DataFrame frame, int offset) {
+        return true;
+    }
+
+    public static int headerSize (DataFrame frame, int offset) {
+
+        return -1;
+    }
 
     // 8 bits
     public int op () {
@@ -40,54 +49,54 @@ public class DHCP implements ProtocolSpec {
 
     // 32 bits
     public int xid () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+8, 0, 32);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+4, 0, 32);
     }
 
     // 16 bits
     public int secs () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+12, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+8, 0, 16);
     }
 
     // 16 bits
     public int flags () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+14, 0, 16);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+10, 0, 16);
     }
 
     // 32 bits
     public int clientIP () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+16, 0, 32);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+12, 0, 32);
     }
 
     // 32 bits
     public int yourIP () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+20, 0, 32);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+16, 0, 32);
     }
 
     // 32 bits
     public int serverIP () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+24, 0, 32);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+20, 0, 32);
     }
 
     // 32 bits
     public int gatewayIP () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+28, 0, 32);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+24, 0, 32);
     }
 
     // 128 bits
     public int clientMAC () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+32, 0, 128);
+        return BinaryUtils.extractInt(frameBytes, headerOrigin+28, 0, 128);
     }
 
     // OPTIONEL
     /**
     // 512 bits
     public int serverName () {
-    return BinaryUtils.extractInt(frameBytes, headerOrigin+48, 0, 512);
+    return BinaryUtils.extractInt(frameBytes, headerOrigin+44, 0, 512);
     }
 
     // 1024 bits
     public int fileName () {
-    return BinaryUtils.extractInt(frameBytes, headerOrigin+112, 0, 1024);
+    return BinaryUtils.extractInt(frameBytes, headerOrigin+108, 0, 1024);
     }
      **/
 

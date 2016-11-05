@@ -14,23 +14,24 @@ public class HTTP implements ProtocolSpec {
 
     public HTTP (DataFrame frame, int headerOrigin) {
         this.frame = frame;
-        this.frameBytes = frame.getBytes();
+        this.frameBytes = frame.bytes();
         this.headerOrigin = headerOrigin;
     }
 
-    public static int headerSize () {
-        return this.bytes.limit() - this.headerOffset;
+    public static int headerSize (DataFrame frame, int offset) {
+        HTTP http = new HTTP(frame, offset);
+        return frame.bytes().limit() - offset;
     }
 
-    public static boolean test (ByteBuffer bytes, int offset) {
-        return new HTTP(bytes, offset).initialLine().indexOf("HTTP/") != -1;
+    public static boolean test (DataFrame frame, int offset) {
+        return new HTTP(frame, offset).initialLine().contains("HTTP/");
     }
 
     // 16 bits
     public String initialLine () {
         int i;
-        for (i = 0; i < this.headerSize() && bytes.get(i) != '\r'; i++);
-        return bytes.subSequence(0, i).toString();
+        for (i = 0; i < headerSize(frame, headerOrigin) && frameBytes.get(i) != '\r'; i++);
+        return frameBytes.asCharBuffer().subSequence(0, i).toString();
     }
 
     public boolean isRequest () {

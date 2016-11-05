@@ -12,8 +12,17 @@ public class UDP implements ProtocolSpec {
 
     public UDP (DataFrame frame, int headerOrigin) {
         this.frame = frame;
-        this.frameBytes = frame.getBytes();
+        this.frameBytes = frame.bytes();
         this.headerOrigin = headerOrigin;
+    }
+
+    public static boolean test (DataFrame frame, int offset) {
+        return true;
+    }
+
+    public static int headerSize (DataFrame frame, int offset) {
+        UDP udp = new UDP(frame, offset);
+        return udp.length();
     }
 
     // 16 bits

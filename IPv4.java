@@ -12,19 +12,24 @@ public class IPv4 implements ProtocolSpec {
 
     public IPv4 (DataFrame frame, int headerOrigin) {
         this.frame = frame;
-        this.frameBytes = frame.getBytes();
+        this.frameBytes = frame.bytes();
         this.headerOrigin = headerOrigin;
     }
 
-    public static boolean test (ByteBuffer bytes, int offset) {
-        return false; //TODO 
+    public static boolean test (DataFrame frame, int offset) {
+        return true; //TODO
+    }
+
+    public static int headerSize (DataFrame frame, int offset) {
+        IPv4 iPv4 = new IPv4(frame, offset);
+        return iPv4.ihl()* 4;  // headerSize
     }
 
     public int version () {
         return BinaryUtils.extractInt(frameBytes, headerOrigin, 0, 4);
     }
 
-    public String ihl () {
+    public int ihl () {
         return BinaryUtils.extractInt(frameBytes, headerOrigin, 4, 4);
     }
 
