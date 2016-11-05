@@ -54,4 +54,12 @@ public class DataFrame {
         return this.timestamp;
     }
 
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append("Frame{id=" + id + ",length=" + length) + ",layers={";
+        for (ProtocolSpec proto : this.layers)
+            s.append(proto.toString()).append(",");
+        s.append("}}");
+        return s;
+    }
 }
