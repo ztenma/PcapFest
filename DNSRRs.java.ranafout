@@ -16,6 +16,14 @@ public class DNSRRs implements ProtocolSpec {
         this.headerOrigin = headerOrigin;
     }
 
+    public static boolean test (DataFrame frame, int offset) {
+        return true;
+    }
+
+    public int headerSize (DataFrame frame, int offset) {
+        return length();
+    }
+
     // ? bits
     /**
     public int name () {
