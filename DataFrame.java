@@ -1,4 +1,5 @@
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.ArrayList;
 
 public class DataFrame {
@@ -19,6 +20,14 @@ public class DataFrame {
         this.timestamp = 0;
         this.bytes = frameBytes;//ByteBuffer.wrap(frameBytesBytes).asReadOnlyBuffer();
         this.layers = new ArrayList<ProtocolSpec>();
+    }
+
+    public void setLayers (List<ProtocolSpec> layers) {
+        this.layers = layers;
+    }
+
+    public List<ProtocolSpec> layers () {
+        return this.layers;
     }
 
     public ProtocolSpec layer (String layerName) {
@@ -42,5 +51,9 @@ public class DataFrame {
 
     public int timestamp () {
         return this.timestamp;
+    }
+
+    public String toString() {
+
     }
 }

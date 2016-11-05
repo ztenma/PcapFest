@@ -47,7 +47,7 @@ public class PcapParser {
     }
 
     /* Divide data in data frames and returns a list of them */
-    public List<DataFrame> extractFrames () {
+    public List<DataFrame> extractFrames () throws PcapParserException {
         // global header: 24 bytes
         // packet header: 16 bytes
         List<DataFrame> frames = new ArrayList<DataFrame>();
@@ -109,23 +109,25 @@ public class PcapParser {
             frameOffset += layers.get(i).headerSize(frame, frameOffset);
             i++;
 
-        } while (frameOffset < frame.length() && lastLayer.name != "UnknownProtocol" && layerLayer.OSILayer != 7);
+        } while (frameOffset < frame.length() && lastLayer.name != "UnknownProtocol" && lastLayer.OSILayer != 7);
 
         for (ProtocolSpec proto : layers)
-            if (proto.name.equals("EthernetII"))
+            if (proto.name.equals("EthernetII")) {
                 ((EthernetII)proto).setFooterOrigin(frameOffset);
                 break;
+            }
 
         return layers;
     }
         
     public String detectLayer (DataFrame frame, int offset, ProtocolSpec lastLayer) {
-        // TODO
+        
         if (lastLayer == null) {
             if (this.dataLinkType == 0) 
                 return "EthernetII";
             else return "UnknownProtocol";
         }
+        
         switch (lastLayer.name) {
             case "EthernetII":
                 lastLayer = (EthernetII) lastLayer;
@@ -168,12 +170,35 @@ public class PcapParser {
         }
     }
 
+    public List<DataFrame> filterProtocol (List<DataFrame> frames, String filterProtoName) {
+        List<DataFrame> filtered = new ArrayList<DataFrame>();
+        for (DataFrame frame : frames)
+            for (ProtocolSpec proto : frame.layers())
+                if (proto.name.equals(filterProtoName)) {
+                    filtered.add(frame);
+                    break;
+                }
+        return filtered;
+    }
+
     public static void main (String[] args) {
+        String filename = (args.length > 0 ? args[0] : "icmping.pcap");
+        String filterProtoName = (args.length > 1 ? args[1] : "EthernetII");
         try {
-            byte[] data = Files.readAllBytes(Paths.get("icmping.pcap"));
+            byte[] data = Files.readAllBytes(Paths.get());
             PcapParser parser = new PcapParser(data);
             System.out.println(parser.toHexString(true, 40, 138)); // First ICMP packet
-        } catch (IOException e) {
+            ArrayList<DataFrame> frames = parser.extractFrames();
+            for (DataFrame frame : frames) {
+                frame.setLayers(parser.extractLayers(frame));
+                System.out.println(frame);
+            }
+            System.out.println('\n');
+            for (DataFrame frame : parser.filterProtocol(frames, filterProtoName)) {
+                System.out.println(frame);
+            }
+
+        } catch (IOException|PcapParserException e) {
             e.printStackTrace();
         }
     }
