@@ -65,7 +65,6 @@ public class PcapParser {
                 frameBytes = ByteBuffer.allocateDirect(origLen);
             }
 
-            System.out.println();
             // Extract record to frame
             frameBytes.put(bytes.array(), recordOffset, inclLen);
             currentFrameLen += inclLen;
@@ -185,7 +184,8 @@ public class PcapParser {
         try {
             byte[] data = Files.readAllBytes(Paths.get(filename));
             PcapParser parser = new PcapParser(data);
-            System.out.println(BinaryUtils.toHexString(data, true, 40, 138)); // First ICMP packet
+            //System.out.println(BinaryUtils.toHexString(data, true, 40, 138)); // First ICMP packet
+            System.out.println(BinaryUtils.toHexString(data, true, 0, data.length)); // First ICMP packet
             
             List<DataFrame> frames = parser.extractFrames();
             for (DataFrame frame : frames) {

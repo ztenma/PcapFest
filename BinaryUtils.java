@@ -23,10 +23,10 @@ public class BinaryUtils {
         if (bitOffset < 0 || bitOffset >= 32 || bitLen < 0 || bitLen >= 32)
             return 0;
         int val = ((ByteBuffer)bytes.position(byteOffset)).getInt();
-        if (bitOffset != 0 && bitLen != 0) {
+        /*if (bitOffset != 0 && bitLen != 0) {
             int mask = (0xFFFFFFFF << 8 - bitLen) >>> bitOffset;
             val = val & mask;
-        }
+        }*/
         return val;
     }
 
