@@ -46,7 +46,7 @@ public class BinaryUtils {
         byte[] bytearray = bytes.array();
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < len; i++) {
-            s.append(String.format("%02X:", bytes[offset + i]));
+            s.append(String.format("%02X:", bytearray[offset + i]));
         }
         return s.deleteCharAt(len-1).toString();
     }
@@ -64,7 +64,7 @@ public class BinaryUtils {
             
             hexStr.append(String.format("%02x ", bytes[offsetMin + i]));
             if (withAscii)
-                asciiStr.append(String.format("%c", this.toPrintable(bytes[offsetMin + i])));
+                asciiStr.append(String.format("%c", toPrintable(bytes[offsetMin + i])));
             
             if (i % rowWidth == rowWidth/2-1) hexStr.append(' ');
             if (i % rowWidth == rowWidth-1) 
@@ -80,7 +80,7 @@ public class BinaryUtils {
         return hexStr.toString();
     }
 
-    private byte toPrintable(byte b) {
+    private static byte toPrintable(byte b) {
         if      (b < 0x20) return (byte)0x2E;
         else if (b > 0x7E) return (byte)0x2E;
         return b;
