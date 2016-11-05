@@ -75,4 +75,12 @@ public class TCP implements ProtocolSpec {
         return BinaryUtils.extractInt(frameBytes, headerOrigin+18, 0, 16);
     }
 
+    @Override
+    public String toString() {
+        return "TCP{" +
+                "srcPort=" + srcPort() + "," +
+                "dstPort=" + dstPort() +
+                '}';
+    }
+
 }

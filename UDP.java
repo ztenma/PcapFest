@@ -45,4 +45,12 @@ public class UDP implements ProtocolSpec {
         return BinaryUtils.extractInt(frameBytes, headerOrigin+6, 0, 16);
     }
 
+    @Override
+    public String toString() {
+        return "UDP{" +
+                "srcPort=" + srcPort() + "," +
+                "dstPort=" + dstPort() +
+                '}';
+    }
+
 }
