@@ -149,16 +149,16 @@ public class PcapParser {
                     default: return "UnknownProtocol";
                 }
             case "TCP":
-                lastLayer = (TCP) lastLayer;
-                layerOffset = offset + lastLayer.headerSize(frame, offset);
+                layerOffset = offset;// + lastLayer.headerSize(frame, offset);
                 if (HTTP.test(frame, layerOffset))
                     return "HTTP";
                 if (DNS.test(frame, layerOffset))
                     return "DNS";
                 return "UnknownProtocol";
             case "UDP":
-                lastLayer = (UDP) lastLayer;
-                layerOffset = offset + lastLayer.headerSize(frame, offset);
+                layerOffset = offset;// + lastLayer.headerSize(frame, offset);
+                if (HTTP.test(frame, layerOffset))
+                    return "HTTP";
                 if (DNS.test(frame, layerOffset))
                     return "DNS";
                 if (DHCP.test(frame, layerOffset))

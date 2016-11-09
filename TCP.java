@@ -25,8 +25,7 @@ public class TCP implements ProtocolSpec {
     public int OSILayer () { return OSILayer; }
 
     public int headerSize (DataFrame frame, int offset) {
-        TCP tcp = new TCP(frame, offset);
-        return tcp.dataOffset() * 4;
+        return this.headerLength() * 4;
     }
 
     // 16 bits
@@ -50,7 +49,7 @@ public class TCP implements ProtocolSpec {
     }
 
     // 4 bits
-    public int dataOffset () {
+    public int headerLength() {
         return BinaryUtils.extractInt(frameBytes, headerOrigin+12, 0, 4);
     }
 

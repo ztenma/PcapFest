@@ -1,4 +1,5 @@
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -19,7 +20,11 @@ public class HTTP implements ProtocolSpec {
     }
 
     public static boolean test (DataFrame frame, int offset) {
-        return new HTTP(frame, offset).initialLine().contains("HTTP/");
+        String text = convertBytesToString(frame.bytes(), offset);
+        int initialLineEnd = text.indexOf("\r\n");
+        if (initialLineEnd != -1)
+            return new HTTP(frame, offset).initialLine().matches(".*HTTP/[0-9]\\.[0-9].*");
+        return false;
     }
 
     public String name () { return name; }
@@ -27,27 +32,31 @@ public class HTTP implements ProtocolSpec {
     public int OSILayer () { return OSILayer; }
 
     public int headerSize (DataFrame frame, int offset) {
-        HTTP http = new HTTP(frame, offset);
-        return frame.bytes().limit() - offset;
+        String text = convertBytesToString(this.frameBytes, this.headerOrigin);
+        return text.indexOf("\r\n\r\n") + 4;
     }
 
-    // 16 bits
+    public static String convertBytesToString (ByteBuffer bytes, int offset) {
+        return new String(bytes.array(), offset, bytes.limit() - offset, Charset.forName("UTF-8"));
+    }
+
     public String initialLine () {
-        int i;
-        for (i = 0; i < headerSize(frame, headerOrigin) && frameBytes.get(i) != '\r'; i++);
-        return frameBytes.asCharBuffer().subSequence(0, i).toString();
+        String text = convertBytesToString(this.frameBytes, this.headerOrigin);
+        int initialLineEnd = text.indexOf("\r\n");
+        return text.substring(0, initialLineEnd);
     }
 
     public boolean isRequest () {
-        return false;
+        return this.initialLine().matches("[a-zA-Z]{3,8} +[^ ]+ +HTTP/[0-9]\\.[0-9]");
     }
     
     public boolean isResponse () {
-        return false;
+        return initialLine().matches("HTTP/[0-9]\\.[0-9] +");
     }
 
-    public List<String> headers () {
-        return null;
+    public String[] headers () {
+        String text = convertBytesToString(this.frameBytes, this.headerOrigin);
+        return text.substring(0, this.headerSize(null, 0)).split("\r\n");
     }
 
     public String body () {

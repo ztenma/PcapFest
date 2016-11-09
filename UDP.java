@@ -25,8 +25,7 @@ public class UDP implements ProtocolSpec {
     public int OSILayer () { return OSILayer; }
 
     public int headerSize (DataFrame frame, int offset) {
-        UDP udp = new UDP(frame, offset);
-        return udp.length();
+        return 8;
     }
 
     // 16 bits

@@ -2,7 +2,7 @@ import java.nio.ByteBuffer;
 
 public class UnknownProtocol implements ProtocolSpec {
 
-    public static final String name = "Unknown protocol";
+    public static final String name = "UnknownProtocol";
     public static final int OSILayer = 0;
 
     public UnknownProtocol (DataFrame frame, int headerOffset) {
