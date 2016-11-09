@@ -160,7 +160,7 @@ public class PcapParser {
                 }
             case "TCP":
                 TCP tcp = (TCP) lastLayer;
-                layerOffset = offset;// + tcp.headerSize(frame, offset);
+                layerOffset = offset;
                 if (HTTP.test(frame, layerOffset))
                     return "HTTP";
                 if (tcp.dstPort() == 53 || DNS.test(frame, layerOffset))
@@ -168,13 +168,13 @@ public class PcapParser {
                 return "UnknownProtocol";
             case "UDP":
                 UDP udp = (UDP) lastLayer;
-                layerOffset = offset;// + udp.headerSize(frame, offset);
+                layerOffset = offset;
                 if (HTTP.test(frame, layerOffset))
                     return "HTTP";
+                if (udp.dstPort() == 67 || udp.dstPort() == 68)// || DHCP.test(frame, layerOffset))
+                    return "DHCP";
                 if (udp.dstPort() == 53 || DNS.test(frame, layerOffset))
                     return "DNS";
-                if (udp.dstPort() == 67 || udp.dstPort() == 68 || DHCP.test(frame, layerOffset))
-                    return "DHCP";
                 return "UnknownProtocol";
             default:
                 return "UnknownProtocol"; 

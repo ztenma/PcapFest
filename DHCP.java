@@ -25,10 +25,8 @@ public class DHCP implements ProtocolSpec {
 
     public int OSILayer () { return OSILayer; }
 
-
     public int headerSize (DataFrame frame, int offset) {
-
-        return -1; // TODO
+        return frame.length() - offset;
     }
 
     // 8 bits
@@ -67,28 +65,28 @@ public class DHCP implements ProtocolSpec {
     }
 
     // 32 bits
-    public int clientIP () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+12, 0, 32);
+    public String clientIP () {
+        return BinaryUtils.extractIPv4Address(frameBytes, headerOrigin+12, 4);
     }
 
     // 32 bits
-    public int yourIP () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+16, 0, 32);
+    public String yourIP () {
+        return BinaryUtils.extractIPv4Address(frameBytes, headerOrigin+16, 4);
     }
 
     // 32 bits
-    public int serverIP () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+20, 0, 32);
+    public String serverIP () {
+        return BinaryUtils.extractIPv4Address(frameBytes, headerOrigin+20, 4);
     }
 
     // 32 bits
-    public int gatewayIP () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+24, 0, 32);
+    public String gatewayIP () {
+        return BinaryUtils.extractIPv4Address(frameBytes, headerOrigin+24, 4);
     }
 
     // 128 bits
-    public int clientMAC () {
-        return BinaryUtils.extractInt(frameBytes, headerOrigin+28, 0, 128);
+    public String clientMAC () {
+        return BinaryUtils.extractMACAddress(frameBytes, headerOrigin+28, 6);
     }
 
     // OPTIONEL
@@ -107,6 +105,8 @@ public class DHCP implements ProtocolSpec {
     @Override
     public String toString() {
         return "DHCP{" +
+                "operation=" + op() + "," +
+                "flags=" + flags() + "," +
                 "yourIP=" + yourIP() + "," +
                 "serverIP=" + serverIP() + "," +
                 "gatewayIP=" + gatewayIP() + "," +
@@ -116,6 +116,8 @@ public class DHCP implements ProtocolSpec {
     
     public String toPrettyString() {
         return "[DHCP]\n" +
+                "operation = " + op() + "\n" +
+                "flags = " + flags() + "\n" +
                 "yourIP = " + yourIP() + "\n" +
                 "serverIP = " + serverIP() + "\n" +
                 "gatewayIP = " + gatewayIP() + "\n" +
