@@ -106,6 +106,7 @@ public class PcapParser {
                 case "HTTP": lastLayer = new HTTP(frame, frameOffset); break;
                 case "DNS": lastLayer = new DNS(frame, frameOffset); break;
                 case "DHCP": lastLayer = new DHCP(frame, frameOffset); break;
+                //case "Payload": lastLayer = new Payload(frame, frameOffset); break;
                 default: lastLayer = new UnknownProtocol(frame, frameOffset);
             }
 
@@ -114,7 +115,7 @@ public class PcapParser {
             i++;
 
             System.out.println("Detected layer: " + protoName + ", Offsets: " + lastLayer.headerSize(frame, frameOffset) + " " + frameOffset);
-        } while (frameOffset < frame.length() && !lastLayer.name().equals("UnknownProtocol") && lastLayer.OSILayer() != 7);
+        } while (frameOffset < frame.length() && !lastLayer.name().equals("UnknownProtocol") && !lastLayer.name().equals("Payload") && lastLayer.OSILayer() != 7);
 
         for (ProtocolSpec proto : layers)
             if (proto.name().equals("EthernetII")) {
@@ -161,21 +162,23 @@ public class PcapParser {
             case "TCP":
                 TCP tcp = (TCP) lastLayer;
                 layerOffset = offset;
+                System.out.println("Ports: " + tcp.srcPort() + " " + tcp.dstPort());
                 if (HTTP.test(frame, layerOffset))
                     return "HTTP";
-                if (tcp.dstPort() == 53 || DNS.test(frame, layerOffset))
+                if (tcp.dstPort() == 53 || tcp.srcPort() == 53)// || DNS.test(frame, layerOffset))
                     return "DNS";
-                return "UnknownProtocol";
+                return "Payload";
             case "UDP":
                 UDP udp = (UDP) lastLayer;
                 layerOffset = offset;
+                System.out.println("Ports: " + udp.srcPort() + " " + udp.dstPort());
                 if (HTTP.test(frame, layerOffset))
                     return "HTTP";
                 if (udp.dstPort() == 67 || udp.dstPort() == 68)// || DHCP.test(frame, layerOffset))
                     return "DHCP";
-                if (udp.dstPort() == 53 || DNS.test(frame, layerOffset))
+                if (udp.dstPort() == 53 || udp.srcPort() == 53)// || DNS.test(frame, layerOffset))
                     return "DNS";
-                return "UnknownProtocol";
+                return "Payload";
             default:
                 return "UnknownProtocol"; 
         }
@@ -199,7 +202,7 @@ public class PcapParser {
             byte[] data = Files.readAllBytes(Paths.get(filename));
             PcapParser parser = new PcapParser(data);
             //System.out.println(BinaryUtils.toHexString(data, true, 40, 138)); // First ICMP packet
-            System.out.println(BinaryUtils.toHexString(data, true, 0, data.length)); // First ICMP packet
+            System.out.println(BinaryUtils.toHexString(data, true, 0, data.length));
             
             List<DataFrame> frames = parser.extractFrames();
             for (DataFrame frame : frames) {

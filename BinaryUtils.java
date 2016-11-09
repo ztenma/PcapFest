@@ -117,10 +117,5 @@ public class BinaryUtils {
     }
 
     public static void main (String[] args) {
-        /*byte b = 5;
-        byte[] bb = {0, 1, 0, 4};
-        System.out.println(Integer.class.isInstance(b) + " " + Integer.class.isInstance(b & 0xff));
-        System.out.println(extractInt(bb, 0, 4));
-        */
     }
 }

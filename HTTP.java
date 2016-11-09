@@ -22,7 +22,7 @@ public class HTTP implements ProtocolSpec {
     public static boolean test (DataFrame frame, int offset) {
         String text = convertBytesToString(frame.bytes(), offset);
         int initialLineEnd = text.indexOf("\r\n");
-        System.out.println(text + "\n" + initialLineEnd);
+        //System.out.println(text + "\n" + initialLineEnd);
         if (initialLineEnd != -1)
             return new HTTP(frame, offset).initialLine().matches(".*HTTP/[0-9]\\.[0-9].*");
         return false;
