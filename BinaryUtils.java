@@ -76,7 +76,7 @@ public class BinaryUtils {
         byte[] bytearray = bytes.array();
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < len/2; i++) {
-            s.append(String.format("%02X%02X:", bytearray[offset + i], bytearray[offset + i + 1]));
+            s.append(String.format("%02X%02X:", bytearray[offset + 2*i], bytearray[offset + 2*i + 1]));
         }
         return s.deleteCharAt(s.length()-1).toString();
     }

@@ -75,7 +75,12 @@ public class DNS implements ProtocolSpec {
     @Override
     public String toString() {
         return "DNS{" +
-                "QUERY=" + ((flags() & 0x8000) == 0) +
+                "query=" + ((flags() & 0x8000) == 0) +
                 '}';
+    }
+    
+    public String toPrettyString() {
+        return "[DNS]\n" +
+            "query=" + ((flags() & 0x8000) == 0) + "\n";
     }
 }

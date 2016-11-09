@@ -7,4 +7,5 @@ public interface ProtocolSpec {
     //boolean test (DataFrame frame, int offset);
     int headerSize (DataFrame frame, int offset);
     //int footerSize (DataFrame frame, int offset);
+    public String toPrettyString();
 }

@@ -60,4 +60,11 @@ public class EthernetII implements ProtocolSpec {
                 ",dstMAC=" + dstMAC() +
                 '}';
     }
+    
+    public String toPrettyString() {
+        return "[EthernetII]\n" +
+                "srcMAC = " + srcMAC() + "\n" +
+                "dstMAC = " + dstMAC() + "\n" +
+                "etherType = " + etherType() + "\n";
+    }
 }

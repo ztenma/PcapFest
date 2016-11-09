@@ -62,4 +62,13 @@ public class DataFrame {
         s.append("}}");
         return s.toString();
     }
+    
+    public String toPrettyString() {
+        StringBuilder s = new StringBuilder();
+        s.append("=== Frame id=" + id + " length=" + length + " ===\n\n");
+        for (ProtocolSpec proto : this.layers)
+            s.append(proto.toPrettyString()).append("\n");
+        s.append("\n");
+        return s.toString();
+    }
 }

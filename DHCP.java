@@ -92,7 +92,7 @@ public class DHCP implements ProtocolSpec {
     }
 
     // OPTIONEL
-    /**
+    /*
     // 512 bits
     public int serverName () {
     return BinaryUtils.extractInt(frameBytes, headerOrigin+44, 0, 512);
@@ -102,7 +102,8 @@ public class DHCP implements ProtocolSpec {
     public int fileName () {
     return BinaryUtils.extractInt(frameBytes, headerOrigin+108, 0, 1024);
     }
-     **/
+     */
+    
     @Override
     public String toString() {
         return "DHCP{" +
@@ -111,5 +112,13 @@ public class DHCP implements ProtocolSpec {
                 "gatewayIP=" + gatewayIP() + "," +
                 "clientMAC=" + clientMAC() +
                 '}';
+    }
+    
+    public String toPrettyString() {
+        return "[DHCP]\n" +
+                "yourIP = " + yourIP() + "\n" +
+                "serverIP = " + serverIP() + "\n" +
+                "gatewayIP = " + gatewayIP() + "\n" +
+                "clientMAC = " + clientMAC() + "\n";
     }
 }

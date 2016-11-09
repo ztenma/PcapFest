@@ -56,4 +56,10 @@ public class UDP implements ProtocolSpec {
                 '}';
     }
 
+    public String toPrettyString() {
+        return "[UDP]\n" +
+                "srcPort = " + srcPort() + "\n" +
+                "dstPort = " + dstPort() + "\n";
+    }
+
 }

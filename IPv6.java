@@ -12,10 +12,10 @@ public class IPv6 implements ProtocolSpec {
     private int headerOrigin;
 
 
-    public IPv6 (DataFrame frame, int pduOrigin, int pduLength) {
+    public IPv6 (DataFrame frame, int headerOrigin) {
         this.frame = frame;
         this.frameBytes = frame.bytes();
-        this.headerOrigin = pduOrigin;
+        this.headerOrigin = headerOrigin;
     }
 
     public static boolean test (DataFrame frame, int offset) {
@@ -62,13 +62,26 @@ public class IPv6 implements ProtocolSpec {
 
 	
 	// 128 bits
-	public int srcIPv6 () {
-		return BinaryUtils.extractInt(frameBytes, headerOrigin +8, 0, 128);
+	public String srcIP () {
+		return BinaryUtils.extractIPv6Address(frameBytes, headerOrigin +8, 16);
 	}
 	
 	// 128 bits
-	public int dstIPv6 () {
-		return BinaryUtils.extractInt(frameBytes, headerOrigin +24, 0, 128);
+	public String dstIP () {
+		return BinaryUtils.extractIPv6Address(frameBytes, headerOrigin +24, 16);
 	}
-	
+
+    public String toString () {
+        return "IPv6{" + 
+            "srcIP=" + srcIP() + "," +
+            "dstIP=" + dstIP() + "," +
+            "ttl=" + hopLimit() + "}";
+    }
+    
+    public String toPrettyString () {
+        return "[IPv6]\n" + 
+            "srcIP = " + srcIP() + "\n" +
+            "dstIP = " + dstIP() + "\n" +
+            "ttl = " + hopLimit() + "\n";
+    }
 }

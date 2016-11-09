@@ -99,6 +99,7 @@ public class PcapParser {
                 case "EthernetII": lastLayer = new EthernetII(frame, frameOffset); break;
                 case "ARP": lastLayer = new ARP(frame, frameOffset); break;
                 case "IPv4": lastLayer = new IPv4(frame, frameOffset); break;
+                case "IPv6": lastLayer = new IPv6(frame, frameOffset); break;
                 case "ICMP": lastLayer = new ICMP(frame, frameOffset); break;
                 case "TCP": lastLayer = new TCP(frame, frameOffset); break;
                 case "UDP": lastLayer = new UDP(frame, frameOffset); break;
@@ -112,6 +113,7 @@ public class PcapParser {
             frameOffset += layers.get(i).headerSize(frame, frameOffset);
             i++;
 
+            System.out.println("Detected layer: " + protoName + ", Offsets: " + lastLayer.headerSize(frame, frameOffset) + " " + frameOffset);
         } while (frameOffset < frame.length() && !lastLayer.name().equals("UnknownProtocol") && lastLayer.OSILayer() != 7);
 
         for (ProtocolSpec proto : layers)
@@ -141,27 +143,37 @@ public class PcapParser {
                     default: return "UnknownProtocol";
                 }
             case "IPv4":
-                IPv4 ip = (IPv4) lastLayer;
-                switch (ip.proto()) {
+                IPv4 ip4 = (IPv4) lastLayer;
+                switch (ip4.proto()) {
+                    case 1: return "ICMP";
+                    case 6: return "TCP";
+                    case 17: return "UDP";
+                    default: return "UnknownProtocol";
+                }
+            case "IPv6":
+                IPv6 ip6 = (IPv6) lastLayer;
+                switch (ip6.nextHeader()) {
                     case 1: return "ICMP";
                     case 6: return "TCP";
                     case 17: return "UDP";
                     default: return "UnknownProtocol";
                 }
             case "TCP":
-                layerOffset = offset;// + lastLayer.headerSize(frame, offset);
+                TCP tcp = (TCP) lastLayer;
+                layerOffset = offset;// + tcp.headerSize(frame, offset);
                 if (HTTP.test(frame, layerOffset))
                     return "HTTP";
-                if (DNS.test(frame, layerOffset))
+                if (tcp.dstPort() == 53 || DNS.test(frame, layerOffset))
                     return "DNS";
                 return "UnknownProtocol";
             case "UDP":
-                layerOffset = offset;// + lastLayer.headerSize(frame, offset);
+                UDP udp = (UDP) lastLayer;
+                layerOffset = offset;// + udp.headerSize(frame, offset);
                 if (HTTP.test(frame, layerOffset))
                     return "HTTP";
-                if (DNS.test(frame, layerOffset))
+                if (udp.dstPort() == 53 || DNS.test(frame, layerOffset))
                     return "DNS";
-                if (DHCP.test(frame, layerOffset))
+                if (udp.dstPort() == 67 || udp.dstPort() == 68 || DHCP.test(frame, layerOffset))
                     return "DHCP";
                 return "UnknownProtocol";
             default:
@@ -199,7 +211,7 @@ public class PcapParser {
             }
             System.out.println("\nFilter: " + filterProtoName + '\n');
             for (DataFrame frame : parser.filterProtocol(frames, filterProtoName)) {
-                System.out.println(frame);
+                System.out.println(frame.toPrettyString());
             }
 
         } catch (IOException|PcapParserException e) {

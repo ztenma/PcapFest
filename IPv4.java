@@ -25,8 +25,7 @@ public class IPv4 implements ProtocolSpec {
     public int OSILayer () { return OSILayer; }
 
     public int headerSize (DataFrame frame, int offset) {
-        IPv4 iPv4 = new IPv4(frame, offset);
-        return iPv4.ihl()* 4;  // headerSize
+        return this.ihl()* 4;  // headerSize
     }
 
     public int version () {
@@ -90,6 +89,14 @@ public class IPv4 implements ProtocolSpec {
                 "flags=" + flags() + "," +
                 "ttl=" + ttl() +
                 '}';
+    }
+    
+    public String toPrettyString() {
+        return "[IPv4]\n" +
+                "srcIP = " + srcIP() + "\n" +
+                "dstIP = " + dstIP() + "\n" +
+                "flags = " + flags() + "\n" +
+                "ttl = " + ttl() + "\n";
     }
 }
 

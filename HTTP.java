@@ -22,6 +22,7 @@ public class HTTP implements ProtocolSpec {
     public static boolean test (DataFrame frame, int offset) {
         String text = convertBytesToString(frame.bytes(), offset);
         int initialLineEnd = text.indexOf("\r\n");
+        System.out.println(text + "\n" + initialLineEnd);
         if (initialLineEnd != -1)
             return new HTTP(frame, offset).initialLine().matches(".*HTTP/[0-9]\\.[0-9].*");
         return false;
@@ -54,19 +55,28 @@ public class HTTP implements ProtocolSpec {
         return initialLine().matches("HTTP/[0-9]\\.[0-9] +");
     }
 
-    public String[] headers () {
+    public String headers () {
         String text = convertBytesToString(this.frameBytes, this.headerOrigin);
-        return text.substring(0, this.headerSize(null, 0)).split("\r\n");
+        int initialLineEnd = text.indexOf("\r\n");
+        return text.substring(initialLineEnd + 2, this.headerSize(null, 0));//.split("\r\n");
     }
 
     public String body () {
-        return null;
+        String text = convertBytesToString(this.frameBytes, this.headerOrigin);
+        return text.substring(this.headerSize(null, 0));
     }
 
     @Override
     public String toString() {
         return "HTTP{" +
-                "InitialLine=" + initialLine() +
+                "initialLine=" + initialLine() +
                 '}';
+    }
+    
+    public String toPrettyString() {
+        return "[HTTP]\n" +
+                "initialLine = \n" + initialLine() + "\n" +
+                "headers = \n" + headers() + "\n" + 
+                "body = \n" + body();
     }
 }

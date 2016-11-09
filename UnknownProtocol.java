@@ -23,4 +23,12 @@ public class UnknownProtocol implements ProtocolSpec {
     public int footerSize (DataFrame frame, int offset) {
         return -1;
     }
+
+    public String toString () {
+        return name;
+    }
+    
+    public String toPrettyString () {
+        return "[" + name + "]\n";
+    }
 }

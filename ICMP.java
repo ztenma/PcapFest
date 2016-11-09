@@ -25,7 +25,7 @@ public class ICMP implements ProtocolSpec {
     public int OSILayer () { return OSILayer; }
 
     public int headerSize (DataFrame frame, int offset) {
-        return 64;
+        return 8;
     }
 
     // 8 bits
@@ -54,6 +54,12 @@ public class ICMP implements ProtocolSpec {
                 "type=" + type() + "," +
                 "code=" + code() +
                 '}';
+    }
+
+    public String toPrettyString() {
+        return "[ICMP]\n" +
+                "type = " + type() + "\n" +
+                "code = " + code() + "\n";
     }
 
 }

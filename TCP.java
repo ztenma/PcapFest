@@ -82,8 +82,16 @@ public class TCP implements ProtocolSpec {
     public String toString() {
         return "TCP{" +
                 "srcPort=" + srcPort() + "," +
-                "dstPort=" + dstPort() +
-                '}';
+                "dstPort=" + dstPort() + "," +
+                "flags=" + flags() + "," +
+                "seqNumber=" + seqNumber() + "}";
     }
 
+    public String toPrettyString() {
+        return "[TCP]\n" +
+                "srcPort = " + srcPort() + "\n" +
+                "dstPort = " + dstPort() + "\n" +
+                "flags = " + flags() + "\n" +
+                "seqNumber = " + seqNumber() + "\n";
+    }
 }

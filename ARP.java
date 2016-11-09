@@ -83,4 +83,12 @@ public class ARP implements ProtocolSpec {
                 "dstIP=" + dstIP() +
                 '}';
     }
+    
+    public String toPrettyString() {
+        return "[ARP]\n" +
+                "srcMAC = " + srcMAC() + "\n" +
+                "srcIP = " + srcIP() + "\n" +
+                "dstMAC = " + dstMAC() + "\n" +
+                "dstIP = " + dstIP() + "\n";
+    }
 }
